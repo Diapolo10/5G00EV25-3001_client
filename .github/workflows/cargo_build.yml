@@ -1,0 +1,68 @@
+on:
+  push:
+    tags:
+    - 'v*'
+
+name: Cross-compile and release
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:  # https://github.com/japaric/rust-cross#the-target-triple
+        - x86_64-unknown-linux-gnu
+        - x86_64-pc-windows-gnu
+        - i686-unknown-linux-gnu
+        - i686-pc-windows-gnu
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          use_cross: true
+          command: build
+          args: --release --target=${{ matrix.target }}
+      - name: Rename binary
+        shell: python
+        run: |
+          from pathlib import Path
+          binary_dir = Path.cwd() / 'target' / 'release'
+          for file in binary_dir.glob('*.*'):
+              if (file.suffix not in {'.d', '.pdb', '.so'}
+                  and file.name != '.cargo-lock'
+                  and file.is_file()):
+                  file.rename(file.with_name(f"{file.stem}-${{ matrix.target }}{file.suffix}"))
+  release:
+    name: Release
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create release
+        id: new_release
+        uses: actions/create_release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this release:
+            - First change
+            - Second change
+          draft: false
+          prerelease: false
+      - name: Upload release assets
+        id: upload_assets
+        uses: dwenegar/upload-release-assets@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.new_release.outputs.id }}
+          assets_path: target/release/*-*-*-*
