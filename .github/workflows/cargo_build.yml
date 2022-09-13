@@ -6,8 +6,30 @@ on:
 name: Cross-compile and release
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:  # https://github.com/japaric/rust-cross#the-target-triple
+        - x86_64-unknown-linux-gnu
+        - x86_64-pc-windows-gnu
+        - wasm32-unknown-emscripten
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --target=${{ matrix.target }}
   release:
     name: Release
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -29,34 +51,31 @@ jobs:
             - Second change
           draft: false
           prerelease: false
-  build:
-    name: Build
-    needs: [ release ]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:  # https://github.com/japaric/rust-cross#the-target-triple
-        - x86_64-unknown-linux-gnu
-        - x86_64-pc-windows-gnu
-        - i686-unknown-linux-gnu
-        - i686-pc-windows-gnu
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --release --target=${{ matrix.target }}
-      - name: Upload release asset
-        id: upload_asset
+      - name: Upload 64-bit Windows build
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_id: ${{ steps.new_release.outputs.id }}
-          assets_path: target/release/client.*
+          asset_path: target/release/client.exe
+          asset_name: client-${{ matrix.target }}-${{ steps.version.outputs.full }}.exe
+          asset_content_type: application/zip
+          upload_url: ${{ steps.new_release.outputs.upload_url }}
+      - name: Upload 64-bit Linux build
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: target/release/client
+          asset_name: client-${{ matrix.target }}-${{ steps.version.outputs.full }}
+          asset_content_type: application/zip
+          upload_url: ${{ steps.new_release.outputs.upload_url }}
+      - name: Upload 32-bit WebAssembly build
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: target/release/client.wasm
+          asset_name: client-${{ matrix.target }}-${{ steps.version.outputs.full }}.wasm
+          asset_content_type: application/zip
+          upload_url: ${{ steps.new_release.outputs.upload_url }}
+
