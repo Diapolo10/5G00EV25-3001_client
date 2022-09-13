@@ -2,8 +2,6 @@ on:
   push:
     tags:
     - 'v*'
-    branches:
-    - main
 
 name: Cross-compile and release
 
@@ -13,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: nowsprinting/check-version-format-action@v3
+        id: version
+        with:
+          prefix: 'v'
       - name: Create release
         id: new_release
         uses: actions/create-release@v1
@@ -50,11 +52,11 @@ jobs:
           use-cross: true
           command: build
           args: --release --target=${{ matrix.target }}
-      - name: Upload release assets
-        id: upload_assets
-        uses: dwenegar/upload-release-assets@v1
+      - name: Upload release asset
+        id: upload_asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_id: ${{ jobs.release.steps.new_release.outputs.id }}
+          release_id: ${{ steps.new_release.outputs.id }}
           assets_path: target/release/client.*
