@@ -37,6 +37,7 @@ jobs:
               if (file.suffix not in {'.d', '.pdb', '.so'}
                   and file.name != '.cargo-lock'
                   and file.is_file()):
+                  print(file)
                   file.rename(file.with_name(f"{file.stem}-${{ matrix.target }}{file.suffix}"))
   release:
     name: Release
@@ -65,4 +66,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.new_release.outputs.id }}
-          assets_path: target/release/*-*-*-*
+          assets_path: target/release/*-*-*
