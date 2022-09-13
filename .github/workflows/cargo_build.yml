@@ -27,6 +27,7 @@ jobs:
           prerelease: false
   build:
     name: Build
+    needs: [ release ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,5 +54,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_id: ${{ steps.new_release.outputs.id }}
+          release_id: ${{ jobs.release.steps.new_release.outputs.id }}
           assets_path: target/release/client.*
