@@ -37,7 +37,7 @@ jobs:
           path: |
             !target/${{ matrix.target }}/release/*.pdb
             !target/${{ matrix.target }}/release/*.d
-            target/${{ matrix.target }}/release/${{ PROGRAM_NAME }}*
+            target/${{ matrix.target }}/release/${{ env.PROGRAM_NAME }}*
   release:
     name: Release
     needs: [ build ]
@@ -70,8 +70,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: ./${{ PROGRAM_NAME }}.exe
-          asset_name: ${{ PROGRAM_NAME }}-x86_64-pc-windows-gnu-${{ steps.version.outputs.full }}.exe
+          asset_path: ./${{ env.PROGRAM_NAME }}.exe
+          asset_name: ${{ env.PROGRAM_NAME }}-x86_64-pc-windows-gnu-${{ steps.version.outputs.full }}.exe
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
       - name: Upload 64-bit Linux build
@@ -79,8 +79,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: ./${{ PROGRAM_NAME }}
-          asset_name: ${{ PROGRAM_NAME }}-x86_64-unknown-linux-gnu-${{ steps.version.outputs.full }}
+          asset_path: ./${{ env.PROGRAM_NAME }}
+          asset_name: ${{ env.PROGRAM_NAME }}-x86_64-unknown-linux-gnu-${{ steps.version.outputs.full }}
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
       - name: Upload 32-bit WebAssembly build
@@ -88,7 +88,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: ./${{ PROGRAM_NAME }}.wasm
-          asset_name: ${{ PROGRAM_NAME }}-wasm32-unknown-emscripten-${{ steps.version.outputs.full }}.wasm
+          asset_path: ./${{ env.PROGRAM_NAME }}.wasm
+          asset_name: ${{ env.PROGRAM_NAME }}-wasm32-unknown-emscripten-${{ steps.version.outputs.full }}.wasm
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
