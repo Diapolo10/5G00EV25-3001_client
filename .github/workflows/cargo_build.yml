@@ -32,9 +32,9 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
-    #   - uses: actions/checkout@v2
-    #     with:
-    #       clean: false
+      - uses: actions/checkout@v2
+        with:
+          clean: false
       - uses: nowsprinting/check-version-format-action@v3
         id: version
         with:
