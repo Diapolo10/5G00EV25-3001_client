@@ -27,14 +27,20 @@ jobs:
           use-cross: true
           command: build
           args: --release --target=${{ matrix.target }}
+      - uses: actions/upload-artifact@v3
+        name: Upload built binary
+        with:
+          name: built-binary
+          path: .next/
   release:
     name: Release
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        name: Download artifacts
         with:
-          clean: false
+          name: built-binary
       - uses: nowsprinting/check-version-format-action@v3
         id: version
         with:
@@ -58,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: target/release/client.exe
+          asset_path: ./client.exe
           asset_name: client-x86_64-pc-windows-gnu-${{ steps.version.outputs.full }}.exe
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
@@ -67,7 +73,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: target/release/client
+          asset_path: ./client
           asset_name: client-x86_64-unknown-linux-gnu-${{ steps.version.outputs.full }}
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
@@ -76,7 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_path: target/release/client.wasm
+          asset_path: ./client.wasm
           asset_name: client-wasm32-unknown-emscripten-${{ steps.version.outputs.full }}.wasm
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
