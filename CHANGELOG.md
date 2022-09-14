@@ -49,19 +49,45 @@ Lorem Ipsum dolor sit amet.
 <!--
 _______________________________________________________________________________
 
-## [0.1.1] - YYYY-MM-DD
+## [0.1.1] - 2022-09-14
 
-In-progress update goes here.
+Added GitHub Actions scripts for building cross-platform
+executables, running unit and integration tests, linting,
+and scheduled security audits.
 
 ### Added
 
-- Stuff
+- CI/CD Cross-platform builder
+- CI/CD Unit test runner
+- CI/CD Linter
+- CI/CD Security audit
 
 ### Changed
 
 - Updated localisation files
 
 -->
+
+_______________________________________________________________________________
+
+## [0.1.1] - 2022-09-14
+
+Added GitHub Actions scripts for building cross-platform
+executables, running unit and integration tests, linting,
+and scheduled security audits. Marks pre-releases automatically.
+
+The changelog is not copied to the release, that needs to be done manually.
+
+### Added
+
+- CI/CD Cross-platform builder
+- CI/CD Unit test runner
+- CI/CD Linter
+- CI/CD Security audit
+
+### Changed
+
+- Updated localisation files
 
 _______________________________________________________________________________
 

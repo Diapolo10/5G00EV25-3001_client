@@ -51,6 +51,13 @@ jobs:
         id: version
         with:
           prefix: 'v'
+      - name: Check for pre-release
+        uses: haya14busa/action-cond@v1
+        id: is_prerelease
+        with:
+          cond: ${{ steps.version.outputs.prerelease != '' }}
+          if_true: true
+          if_false: false
       - name: Create release
         id: new_release
         uses: actions/create-release@v1
@@ -59,12 +66,8 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this release:
-            - First change
-            - Second change
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.is_prerelease.outputs.value }}
       - name: Upload 64-bit Windows build
         uses: actions/upload-release-asset@v1
         env:
