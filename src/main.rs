@@ -1,9 +1,13 @@
 use ::client::ChatApp;
-use ::egui::Vec2;
+use ::egui::{Pos2, Vec2};
 
 fn main() {
-    let mut native_options = eframe::NativeOptions::default();
-    native_options.initial_window_size = Some(Vec2::new(1280., 720.));
+    let native_options = eframe::NativeOptions {
+        decorated: false,                                  // Hides the top panel
+        initial_window_size: Some(Vec2::new(1280., 720.)), // Not working
+        initial_window_pos: Some(Pos2::new(300., 150.)),   // Not working
+        ..Default::default()
+    };
     eframe::run_native(
         "Chat App",
         native_options,
