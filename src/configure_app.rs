@@ -8,11 +8,15 @@ use eframe::egui::{
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
-pub struct ChatApp {}
+pub struct ChatApp {
+    pub chatroom_search: String,
+}
 
 impl Default for ChatApp {
     fn default() -> Self {
-        Self {}
+        Self {
+            chatroom_search: "".to_owned(),
+        }
     }
 }
 
@@ -27,7 +31,6 @@ impl ChatApp {
 
         configure_fonts(&cc.egui_ctx);
         configure_text_styles(&cc.egui_ctx);
-
         Default::default()
     }
 }
@@ -63,7 +66,7 @@ pub fn configure_text_styles(ctx: &egui::Context) {
         (Heading, FontId::new(30.0, Proportional)),
         (Body, FontId::new(18.0, Proportional)),
         (Monospace, FontId::new(14.0, Proportional)),
-        (Button, FontId::new(14.0, Proportional)),
+        (Button, FontId::new(20.0, Proportional)),
         (Small, FontId::new(10.0, Proportional)),
     ]
     .into();

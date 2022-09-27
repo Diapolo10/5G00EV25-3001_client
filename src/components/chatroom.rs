@@ -7,6 +7,7 @@ pub fn chatroom(ctx: &egui::Context, ui: &mut Ui) {
     let total_rows = 100;
     ui.with_layout(Layout::top_down_justified(Align::Center), |ui| {
         egui::ScrollArea::vertical()
+            .id_source("chatroom")
             .max_width(f32::INFINITY)
             .show_rows(ui, row_height, total_rows, |ui, row_range| {
                 for row in row_range {
