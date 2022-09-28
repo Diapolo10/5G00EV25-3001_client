@@ -25,8 +25,14 @@ impl App for ChatApp {
                     right: 5.,
                     bottom: 5.,
                 };
-                side_pane(ctx, ui, &mut self.chatroom_search);
-                chatroom(ctx, ui);
+                side_pane(
+                    ctx,
+                    ui,
+                    &mut self.chatrooms,
+                    &mut self.selected_chatroom,
+                    &mut self.chatroom_search,
+                );
+                chatroom(ctx, ui, &mut self.selected_chatroom);
             });
         });
     }

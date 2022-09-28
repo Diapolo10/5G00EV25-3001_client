@@ -9,12 +9,17 @@ use eframe::egui::{
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
+    // Vector with name and id
+    pub chatrooms: Vec<(String, String)>,
+    pub selected_chatroom: String,
     pub chatroom_search: String,
 }
 
 impl Default for ChatApp {
     fn default() -> Self {
         Self {
+            chatrooms: Vec::new(),
+            selected_chatroom: "".to_string(),
             chatroom_search: "".to_owned(),
         }
     }
@@ -31,7 +36,16 @@ impl ChatApp {
 
         configure_fonts(&cc.egui_ctx);
         configure_text_styles(&cc.egui_ctx);
-        Default::default()
+
+        // Dummy data for testing
+        Self {
+            chatrooms: vec![
+                ("Chatroom 1".to_string(), "id1".to_string()),
+                ("Room 2".to_string(), "id2".to_string()),
+            ],
+            selected_chatroom: "".to_string(),
+            chatroom_search: "".to_owned(),
+        }
     }
 }
 

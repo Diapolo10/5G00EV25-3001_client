@@ -1,11 +1,12 @@
 use egui::{Align, Layout, Stroke, Ui, Vec2};
 
-pub fn side_pane(ctx: &egui::Context, ui: &mut Ui, chatroom_search: &mut String) {
-    // Temp vector and dummy data for chatrooms
-    let mut chatrooms = Vec::<&str>::new();
-    chatrooms.push("Chatroom 1");
-    chatrooms.push("Chatroom 2");
-    chatrooms.push("Room 3");
+pub fn side_pane(
+    ctx: &egui::Context,
+    ui: &mut Ui,
+    chatrooms: &mut Vec<(String, String)>,
+    selected_chatroom: &mut String,
+    chatroom_search: &mut String,
+) {
     // Use 20% of width for the side pane
     ui.allocate_ui_with_layout(
         Vec2 {
@@ -46,14 +47,15 @@ pub fn side_pane(ctx: &egui::Context, ui: &mut Ui, chatroom_search: &mut String)
                     // Iterate through chatrooms, this will filter by TextEdit if it contains something
                     for i in chatrooms
                         .iter()
-                        .filter(|x| x.starts_with(&chatroom_search.to_string()))
+                        .filter(|x| x.0.starts_with(&chatroom_search.to_string()))
                         .enumerate()
                     {
                         let text = i.1;
                         let button =
-                            ui.add_sized([ui.available_width(), 30.], egui::Button::new(&**text));
+                            ui.add_sized([ui.available_width(), 30.], egui::Button::new(&text.0));
                         if button.clicked() {
-                            println!("{}", text);
+                            *selected_chatroom = text.0.clone();
+                            println!("{}", &text.0);
                         }
                     }
                 });
