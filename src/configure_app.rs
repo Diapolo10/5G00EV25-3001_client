@@ -6,8 +6,8 @@ use eframe::egui::{
 };
 
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
-#[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
+// #[derive(serde::Deserialize, serde::Serialize)]
+// #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
     // Vector with name and id
     pub chatrooms: Vec<(String, String)>,
@@ -16,16 +16,16 @@ pub struct ChatApp {
     pub message: String,
 }
 
-impl Default for ChatApp {
-    fn default() -> Self {
-        Self {
-            chatrooms: Vec::new(),
-            selected_chatroom: "".to_string(),
-            chatroom_search: "".to_owned(),
-            message: "".to_owned(),
-        }
-    }
-}
+// impl Default for ChatApp {
+//     fn default() -> Self {
+//         Self {
+//             chatrooms: Vec::new(),
+//             selected_chatroom: "".to_owned(),
+//             chatroom_search: "".to_owned(),
+//             message: "".to_owned(),
+//         }
+//     }
+// }
 
 impl ChatApp {
     /// Called once before the first frame.
@@ -42,13 +42,15 @@ impl ChatApp {
         // Dummy data for testing
         Self {
             chatrooms: vec![
-                ("Chatroom 1".to_string(), "id1".to_string()),
-                ("Room 2".to_string(), "id2".to_string()),
+                ("Chatroom 1".to_owned(), "id1".to_owned()),
+                ("Room 2".to_owned(), "id2".to_owned()),
             ],
-            selected_chatroom: "Chatroom 1".to_string(),
+            selected_chatroom: "Chatroom 1".to_owned(),
             chatroom_search: "".to_owned(),
             message: "".to_owned(),
         }
+
+        // Default::default();
     }
 }
 
@@ -71,7 +73,7 @@ pub fn configure_fonts(ctx: &egui::Context) {
         .families
         .get_mut(&FontFamily::Proportional)
         .unwrap()
-        .insert(0, "Raleway".to_string());
+        .insert(0, "Raleway".to_owned());
     ctx.set_fonts(font_def);
 }
 

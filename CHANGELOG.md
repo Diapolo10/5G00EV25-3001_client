@@ -46,27 +46,25 @@ Lorem Ipsum dolor sit amet.
 
 -->
 
-<!--
+
 _______________________________________________________________________________
 
-## [0.1.1] - 2022-09-14
+## [0.2.0] - 2022-09-30
 
-Added GitHub Actions scripts for building cross-platform
-executables, running unit and integration tests, linting,
-and scheduled security audits.
+Core structure created. Used a custom window frame from egui GitHub repo 
+examples. Added two large components, side pane and chatroom.
 
 ### Added
 
-- CI/CD Cross-platform builder
-- CI/CD Unit test runner
-- CI/CD Linter
-- CI/CD Security audit
-
-### Changed
-
-- Updated localisation files
-
--->
+- Window frame
+- Font and text style configuration
+- Side pane component
+    - All chatrooms in a list
+    - Search from chatrooms
+    - Select the chatroom currently in use
+- Chatroom component
+    - Scroll area to display messages
+    - Input field to write messages
 
 _______________________________________________________________________________
 
