@@ -13,6 +13,7 @@ pub struct ChatApp {
     pub chatrooms: Vec<(String, String)>,
     pub selected_chatroom: String,
     pub chatroom_search: String,
+    pub message: String,
 }
 
 impl Default for ChatApp {
@@ -21,6 +22,7 @@ impl Default for ChatApp {
             chatrooms: Vec::new(),
             selected_chatroom: "".to_string(),
             chatroom_search: "".to_owned(),
+            message: "".to_owned(),
         }
     }
 }
@@ -43,8 +45,9 @@ impl ChatApp {
                 ("Chatroom 1".to_string(), "id1".to_string()),
                 ("Room 2".to_string(), "id2".to_string()),
             ],
-            selected_chatroom: "".to_string(),
+            selected_chatroom: "Chatroom 1".to_string(),
             chatroom_search: "".to_owned(),
+            message: "".to_owned(),
         }
     }
 }

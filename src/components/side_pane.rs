@@ -19,6 +19,7 @@ pub fn side_pane(
             ui.add_space(10.);
             ui.heading("User profile");
             ui.add_space(10.);
+            // Add a line under "User Profile"
             let rect = ui.max_rect();
             let painter = ui.painter();
             let text_color = ctx.style().visuals.text_color();
@@ -36,7 +37,7 @@ pub fn side_pane(
                 .id_source("side_pane")
                 .max_width(ui.available_width())
                 .show_rows(ui, row_height, chatrooms.len(), |ui, _row_range| {
-                    // Search for a chatroom
+                    // TextEdit for searching for a chatroom
                     ui.add(
                         egui::TextEdit::singleline(chatroom_search)
                             .id_source("search_response")
@@ -44,10 +45,10 @@ pub fn side_pane(
                             .desired_width(ui.available_width())
                             .margin(Vec2 { x: 8., y: 4. }),
                     );
-                    // Iterate through chatrooms, this will filter by TextEdit if it contains something
+                    // Show all chatrooms and if TextEdit contains something filter case insensitively
                     for i in chatrooms
                         .iter()
-                        .filter(|x| x.0.starts_with(&chatroom_search.to_string()))
+                        .filter(|x| x.0.to_lowercase().contains(&chatroom_search.to_lowercase()))
                         .enumerate()
                     {
                         let text = i.1;

@@ -32,7 +32,7 @@ impl App for ChatApp {
                     &mut self.selected_chatroom,
                     &mut self.chatroom_search,
                 );
-                chatroom(ctx, ui, &mut self.selected_chatroom);
+                chatroom(ctx, ui, &mut self.selected_chatroom, &mut self.message);
             });
         });
     }
