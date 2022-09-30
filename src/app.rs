@@ -18,7 +18,7 @@ impl App for ChatApp {
         window_frame(ctx, frame, title, |ui| {
             // Create layout and add the components
             ui.with_layout(Layout::left_to_right(Align::default()), |ui| {
-                // TODO: Add margin around frame contents (this is not working)
+                // TODO: Add margin around frame contents (not working)
                 ui.style_mut().spacing.window_margin = Margin {
                     left: 5.,
                     top: 5.,

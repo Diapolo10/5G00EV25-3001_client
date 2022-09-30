@@ -46,28 +46,27 @@ Lorem Ipsum dolor sit amet.
 
 -->
 
-
+<!--
 _______________________________________________________________________________
 
-## [0.2.0] - 2022-09-30
+## [0.1.1] - 2022-09-14
 
-Core structure created. Used a custom window frame from egui GitHub repo 
-examples. Configured fonts and text styles. Added two large components,
-side pane and chatroom. Side pane has all chatrooms listed and functionality
-for searching from the list and selecting the chatroom currently in use. 
-Chatroom has a scroll area for messages and a message input field. 
+Added GitHub Actions scripts for building cross-platform
+executables, running unit and integration tests, linting,
+and scheduled security audits.
 
 ### Added
 
-- Window frame
-- Font and text style configuration
-- Side pane component
-    - All chatrooms in a list
-    - Search from chatrooms
-    - Select the chatroom currently in use
-- Chatroom component
-    - Scroll area to display messages
-    - Input field to write messages
+- CI/CD Cross-platform builder
+- CI/CD Unit test runner
+- CI/CD Linter
+- CI/CD Security audit
+
+### Changed
+
+- Updated localisation files
+
+-->
 
 _______________________________________________________________________________
 
