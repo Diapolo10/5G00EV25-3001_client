@@ -7,6 +7,8 @@ pub fn side_pane(
     selected_chatroom: &mut String,
     chatroom_search: &mut String,
 ) {
+    //! A component that takes up the left side of the screen.
+    //! It shows user profile and all the available chatrooms with a search funtionality.
     // Use 20% of width for the side pane
     ui.allocate_ui_with_layout(
         Vec2 {

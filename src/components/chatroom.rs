@@ -6,6 +6,8 @@ pub fn chatroom(
     selected_chatroom: &mut String,
     message: &mut String,
 ) {
+    //! A component where chatroom is opened and all the messages are shown.
+    //! It takes up a majority of the screen.
     let text_style = egui::TextStyle::Body;
     let row_height = ui.text_style_height(&text_style);
     // let row_height = ui.spacing().interact_size.y; // if you are adding buttons instead of labels.

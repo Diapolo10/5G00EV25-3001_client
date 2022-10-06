@@ -28,6 +28,8 @@ pub struct ChatApp {
 // }
 
 impl ChatApp {
+    //! Implement some functionality for the struct (e.g. configure custom fonts)
+
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         // Load previous app state (if any).
