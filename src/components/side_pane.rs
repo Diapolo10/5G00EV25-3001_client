@@ -1,5 +1,30 @@
 use egui::{Align, Layout, Stroke, Ui, Vec2};
 
+// Tests for side_pane component
+#[cfg(test)]
+mod tests {
+    use crate::side_pane;
+
+    #[test]
+    fn some_test() {
+        let ctx = egui::Context::default();
+        let mut chatrooms = vec![
+            ("Chatroom 1".to_owned(), "id1".to_owned()),
+            ("Room 2".to_owned(), "id2".to_owned()),
+        ];
+
+        egui::__run_test_ui(|ui| {
+            side_pane(
+                &ctx,
+                ui,
+                &mut chatrooms,
+                &mut "Chatroom 1".to_owned(),
+                &mut "chatroom".to_owned(),
+            );
+        });
+    }
+}
+
 pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,

@@ -1,5 +1,25 @@
 use egui::{Align, Layout, Ui, Vec2};
 
+// Tests for chatroom component
+#[cfg(test)]
+mod tests {
+    use crate::chatroom;
+
+    #[test]
+    fn some_test() {
+        let ctx = egui::Context::default();
+
+        egui::__run_test_ui(|ui| {
+            chatroom(
+                &ctx,
+                ui,
+                &mut "Chatroom 1".to_owned(),
+                &mut "New message".to_owned(),
+            );
+        });
+    }
+}
+
 pub fn chatroom(
     ctx: &egui::Context,
     ui: &mut Ui,
