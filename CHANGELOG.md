@@ -46,12 +46,11 @@ Lorem Ipsum dolor sit amet.
 
 -->
 
-
 _______________________________________________________________________________
 
 ## [0.2.0] - 2022-09-30
 
-Core structure created. Used a custom window frame from egui GitHub repo 
+Core structure created. Used a custom window frame from egui GitHub repo
 examples. Added two large components, side pane and chatroom.
 
 ### Added
@@ -59,12 +58,12 @@ examples. Added two large components, side pane and chatroom.
 - Window frame
 - Font and text style configuration
 - Side pane component
-    - All chatrooms in a list
-    - Search from chatrooms
-    - Select the chatroom currently in use
+  - All chatrooms in a list
+  - Search from chatrooms
+  - Select the chatroom currently in use
 - Chatroom component
-    - Scroll area to display messages
-    - Input field to write messages
+  - Scroll area to display messages
+  - Input field to write messages
 
 _______________________________________________________________________________
 
@@ -98,14 +97,8 @@ This is the initial version of the project.
 - The base project
 
 <!-- markdownlint-configure-file {
-    "MD022": false,
-    "MD024": false,
-    "MD030": false,
-    "MD032": false
+    "MD024": false
 } -->
 <!--
-    MD022: Blanks around headings
     MD024: No duplicate headings
-    MD030: Spaces after list markers
-    MD032: Blanks around lists
 -->
