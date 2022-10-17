@@ -29,7 +29,7 @@ impl App for ChatApp {
                 side_pane(
                     ctx,
                     ui,
-                    &mut self.chatrooms,
+                    &mut self.rooms,
                     &mut self.selected_chatroom,
                     &mut self.chatroom_search,
                 );
