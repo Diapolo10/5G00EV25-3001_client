@@ -1,6 +1,8 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Debug)]
+/// Defines fields for a room. Used for fetching and posting chatrooms
+/// as well as storing them in a vector in an instance of Rooms.
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Room {
     pub id: String,
     pub name: String,
@@ -8,13 +10,13 @@ pub struct Room {
     pub owner: String,
 }
 
-#[derive(Deserialize, Debug)]
+/// For storing chatrooms in a vector
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Rooms {
     pub rooms: Vec<Room>,
 }
 
 impl Rooms {
-    /// Called once before the first frame.
     pub fn get_rooms(&self) -> &Vec<Room> {
         return &self.rooms;
     }

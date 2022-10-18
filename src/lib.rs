@@ -1,6 +1,6 @@
 //! Crate documentation goes here
-mod configure_app;
-pub use configure_app::ChatApp;
+mod structs;
+pub use structs::{ChatApp, HttpClient, Room, Rooms};
 mod app;
 mod components;
 pub use components::{chatroom, side_pane, window_frame};

@@ -3,18 +3,19 @@ use egui::{Align, Layout, Stroke, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
-use super::{Room, Rooms};
+use crate::{HttpClient, Room, Rooms};
 
 // Tests for side_pane component
 #[cfg(test)]
 mod tests {
     use uuid::Uuid;
 
-    use crate::{components::Room, components::Rooms, side_pane};
+    use crate::{side_pane, HttpClient, Room, Rooms};
 
     #[test]
     fn some_test() {
         let ctx = egui::Context::default();
+        let http_client = HttpClient::default();
         let mut rooms = Rooms {
             rooms: vec![
                 Room {
@@ -36,6 +37,7 @@ mod tests {
             side_pane(
                 &ctx,
                 ui,
+                &http_client,
                 &mut rooms,
                 &mut "Chatroom 1".to_owned(),
                 &mut "chatroom".to_owned(),
@@ -44,37 +46,46 @@ mod tests {
     }
 }
 
-fn create_room(room_name: &str, room_public: bool) {
-    let mut body = HashMap::new();
+fn create_room(http_client: &HttpClient, room_name: &str, room_public: bool) {
     let room_id = Uuid::new_v4().to_string();
     let user_id = Uuid::new_v4().to_string();
-    body.insert("id", room_id);
-    body.insert("name", room_name.to_owned());
-    body.insert("public", room_public.to_string());
-    body.insert("owner", user_id);
+    let body = Room {
+        id: room_id,
+        name: room_name.to_owned(),
+        public: room_public,
+        owner: user_id.to_owned(),
+    };
 
-    let _res = reqwest::blocking::Client::new()
-        .post("http://127.0.0.1:8080/api/v1/rooms")
+    let _res = match http_client
+        .client
+        .post(format!("{}{}", http_client.base_url, "api/v1/rooms"))
         .header(CONTENT_TYPE, "application/json")
         .json(&body)
-        .send();
+        .send()
+    {
+        Ok(res) => println!("{:#?}", res.json::<Room>()),
+        Err(err) => println!("Post room error: {:#?}", err),
+    };
 }
 
-fn fetch_rooms() -> Rooms {
-    let _res = match reqwest::blocking::get("http://127.0.0.1:8080/api/v1/rooms") {
+fn fetch_rooms(http_client: &HttpClient) -> Rooms {
+    let _res = match http_client
+        .client
+        .get(format!("{}{}", http_client.base_url, "api/v1/rooms"))
+        .send()
+    {
         Ok(res) => {
             if !res.status().is_success() {
                 println!("Error: {}", res.status());
                 return Rooms { rooms: vec![] };
             } else {
-                let body = res.json::<Vec<Room>>();
-                let rooms = body.unwrap();
+                let rooms = res.json::<Vec<Room>>().unwrap();
                 // println!("{:#?}", rooms);
                 return Rooms { rooms };
             }
         }
         Err(err) => {
-            println!("Request failed: {}", err.to_string());
+            println!("Fetch rooms error: {}", err.to_string());
             return Rooms { rooms: vec![] };
         }
     };
@@ -83,14 +94,15 @@ fn fetch_rooms() -> Rooms {
 pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,
+    http_client: &HttpClient,
     rooms: &mut Rooms,
     selected_chatroom: &mut String,
     chatroom_search: &mut String,
 ) {
     //! A component that takes up the left side of the screen.
-    //! It shows user profile and all the available chatrooms with a search funtionality.
+    //! It shows user profile and all the available chatrooms with a search functionality.
 
-    *rooms = fetch_rooms();
+    *rooms = fetch_rooms(http_client);
 
     // Use 20% of width for the side pane
     ui.allocate_ui_with_layout(
@@ -141,8 +153,7 @@ pub fn side_pane(
                     if button.clicked() {
                         let room_name = "New room";
                         let room_public = true;
-                        create_room(room_name, room_public);
-                        println!("Room created!");
+                        create_room(http_client, room_name, room_public);
                     }
                 });
                 ui.add_space(12.);

@@ -5,7 +5,7 @@ use eframe::egui::{
     TextStyle::{Body, Button, Heading, Monospace, Small},
 };
 
-use crate::components::Rooms;
+use crate::Rooms;
 
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 // #[derive(serde::Deserialize, serde::Serialize)]
@@ -29,7 +29,7 @@ pub struct ChatApp {
 // }
 
 impl ChatApp {
-    //! Implement some functionality for the struct (e.g. configure custom fonts)
+    //! Implement some functionality for the app struct (e.g. configure custom fonts)
 
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
@@ -60,7 +60,7 @@ pub fn configure_fonts(ctx: &egui::Context) {
     // Load up the font
     font_def.font_data.insert(
         "Raleway".to_owned(),
-        FontData::from_static(include_bytes!("./fonts/Raleway-Regular.ttf")),
+        FontData::from_static(include_bytes!("../fonts/Raleway-Regular.ttf")),
     ); // .ttf and .otf supported
        // Put my font first (highest priority):
     font_def
