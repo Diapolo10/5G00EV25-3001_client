@@ -21,7 +21,7 @@ mod tests {
 }
 
 pub fn chatroom(
-    ctx: &egui::Context,
+    _ctx: &egui::Context,
     ui: &mut Ui,
     selected_chatroom: &mut String,
     message: &mut String,
@@ -63,7 +63,7 @@ pub fn chatroom(
         // Print messages
         ui.with_layout(Layout::top_down(Align::Center), |ui| {
             ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 5. };
-            ui.heading("Current chatroom: ".to_owned() + &selected_chatroom);
+            ui.heading("Current chatroom: ".to_owned() + selected_chatroom);
             egui::ScrollArea::vertical()
                 .id_source("chatroom")
                 .max_width(f32::INFINITY)
