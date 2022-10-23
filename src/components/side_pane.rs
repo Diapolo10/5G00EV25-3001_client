@@ -1,23 +1,44 @@
 use egui::{Align, Layout, Stroke, Ui, Vec2};
+use reqwest::header::CONTENT_TYPE;
+use uuid::Uuid;
+
+use crate::{HttpClient, Room, Rooms};
 
 // Tests for side_pane component
 #[cfg(test)]
 mod tests {
-    use crate::side_pane;
+    use uuid::Uuid;
+
+    use crate::{side_pane, HttpClient, Room, Rooms};
 
     #[test]
     fn some_test() {
         let ctx = egui::Context::default();
-        let mut chatrooms = vec![
-            ("Chatroom 1".to_owned(), "id1".to_owned()),
-            ("Room 2".to_owned(), "id2".to_owned()),
-        ];
+        let http_client = HttpClient::default();
+        let mut rooms = Rooms {
+            rooms: vec![
+                Room {
+                    id: Uuid::new_v4().to_string(),
+                    name: "Chatroom 1".to_owned(),
+                    public: true,
+                    owner: Uuid::new_v4().to_string(),
+                },
+                Room {
+                    id: Uuid::new_v4().to_string(),
+                    name: "New room".to_owned(),
+                    public: true,
+                    owner: Uuid::new_v4().to_string(),
+                },
+            ],
+        };
 
         egui::__run_test_ui(|ui| {
             side_pane(
                 &ctx,
                 ui,
-                &mut chatrooms,
+                &http_client,
+                &mut true,
+                &mut rooms,
                 &mut "Chatroom 1".to_owned(),
                 &mut "chatroom".to_owned(),
             );
@@ -25,15 +46,76 @@ mod tests {
     }
 }
 
+fn create_room(
+    http_client: &HttpClient,
+    trigger_fetch: &mut bool,
+    room_name: &str,
+    room_public: bool,
+) {
+    let room_id = Uuid::new_v4().to_string();
+    let user_id = Uuid::new_v4().to_string();
+    let body = Room {
+        id: room_id,
+        name: room_name.to_owned(),
+        public: room_public,
+        owner: user_id,
+    };
+
+    match http_client
+        .client
+        .post(format!("{}{}", http_client.base_url, "api/v1/rooms"))
+        .header(CONTENT_TYPE, "application/json")
+        .json(&body)
+        .send()
+    {
+        Ok(res) => {
+            println!("{:#?}", res.json::<Room>());
+            *trigger_fetch = true;
+        }
+        Err(err) => println!("Post room error: {}", err),
+    };
+}
+
+fn fetch_rooms(http_client: &HttpClient) -> Rooms {
+    match http_client
+        .client
+        .get(format!("{}{}", http_client.base_url, "api/v1/rooms"))
+        .send()
+    {
+        Ok(res) => {
+            if !res.status().is_success() {
+                println!("Error: {}", res.status());
+                Rooms { rooms: vec![] }
+            } else {
+                let rooms = res.json::<Vec<Room>>().unwrap();
+                println!("{:#?}", rooms);
+                Rooms { rooms }
+            }
+        }
+        Err(err) => {
+            println!("Fetch rooms error: {}", err);
+            Rooms { rooms: vec![] }
+        }
+    }
+}
+
 pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,
-    chatrooms: &mut Vec<(String, String)>,
+    http_client: &HttpClient,
+    trigger_fetch: &mut bool,
+    rooms: &mut Rooms,
     selected_chatroom: &mut String,
     chatroom_search: &mut String,
 ) {
     //! A component that takes up the left side of the screen.
-    //! It shows user profile and all the available chatrooms with a search funtionality.
+    //! It shows user profile and all the available chatrooms with a search functionality.
+
+    if *trigger_fetch {
+        *rooms = fetch_rooms(http_client);
+        *trigger_fetch = false;
+    }
+
     // Use 20% of width for the side pane
     ui.allocate_ui_with_layout(
         Vec2 {
@@ -59,34 +141,60 @@ pub fn side_pane(
                 Stroke::new(1.0, text_color),
             );
             let row_height = ui.spacing().interact_size.y;
-            // ScrollArea to host all chatrooms as buttons
-            egui::ScrollArea::vertical()
-                .id_source("side_pane")
-                .max_width(ui.available_width())
-                .show_rows(ui, row_height, chatrooms.len(), |ui, _row_range| {
-                    // TextEdit for searching for a chatroom
-                    ui.add(
-                        egui::TextEdit::singleline(chatroom_search)
-                            .id_source("search_response")
-                            .hint_text("Search for a chatroom")
-                            .desired_width(ui.available_width())
-                            .margin(Vec2 { x: 8., y: 4. }),
+            // TextEdit for searching for a chatroom
+            ui.add(
+                egui::TextEdit::singleline(chatroom_search)
+                    .id_source("search_response")
+                    .hint_text("Search for a chatroom")
+                    .desired_width(ui.available_width())
+                    .margin(Vec2 { x: 8., y: 4. }),
+            );
+            // Use bottom_up layout to add create chatroom functionality to the bottom
+            // and leave the remaining space for chatroom scroll area
+            ui.with_layout(Layout::bottom_up(Align::Center), |ui| {
+                ui.add_space(28.);
+                ui.horizontal(|ui| {
+                    let button = ui.add_sized(
+                        [ui.available_width(), 30.],
+                        egui::Button::new("Create chatroom"),
                     );
-                    // Show all chatrooms and if TextEdit contains something filter case insensitively
-                    for i in chatrooms
-                        .iter()
-                        .filter(|x| x.0.to_lowercase().contains(&chatroom_search.to_lowercase()))
-                        .enumerate()
-                    {
-                        let text = i.1;
-                        let button =
-                            ui.add_sized([ui.available_width(), 30.], egui::Button::new(&text.0));
-                        if button.clicked() {
-                            *selected_chatroom = text.0.clone();
-                            println!("{}", &text.0);
-                        }
+                    if button.clicked() {
+                        let room_name = "New room";
+                        let room_public = true;
+                        create_room(http_client, trigger_fetch, room_name, room_public);
                     }
                 });
+                ui.add_space(12.);
+                // ScrollArea to host all chatrooms as buttons
+                ui.with_layout(Layout::top_down(Align::Center), |ui| {
+                    egui::ScrollArea::vertical()
+                        .id_source("side_pane")
+                        .max_width(ui.available_width())
+                        .show_rows(ui, row_height, rooms.rooms.len(), |ui, _row_range| {
+                            // Show all chatrooms and if chatroom search contains something filter case insensitively
+                            for i in rooms
+                                .get_rooms()
+                                .iter()
+                                .filter(|x| {
+                                    x.name
+                                        .to_lowercase()
+                                        .contains(&chatroom_search.to_lowercase())
+                                })
+                                .enumerate()
+                            {
+                                let text = i.1;
+                                let button = ui.add_sized(
+                                    [ui.available_width(), 30.],
+                                    egui::Button::new(&text.name),
+                                );
+                                if button.clicked() {
+                                    *selected_chatroom = text.id.clone();
+                                    println!("{}", &text.id);
+                                }
+                            }
+                        });
+                })
+            });
         },
     );
 }

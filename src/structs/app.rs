@@ -5,15 +5,18 @@ use eframe::egui::{
     TextStyle::{Body, Button, Heading, Monospace, Small},
 };
 
+use crate::Rooms;
+
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
-    // Vector with name and id
-    pub chatrooms: Vec<(String, String)>,
+    pub rooms: Rooms,
     pub selected_chatroom: String,
     pub chatroom_search: String,
     pub message: String,
+    pub trigger_fetch_rooms: bool,
+    pub trigger_fetch_messages: bool,
 }
 
 // impl Default for ChatApp {
@@ -28,7 +31,7 @@ pub struct ChatApp {
 // }
 
 impl ChatApp {
-    //! Implement some functionality for the struct (e.g. configure custom fonts)
+    //! Implement some functionality for the app struct (e.g. configure custom fonts)
 
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
@@ -43,13 +46,12 @@ impl ChatApp {
 
         // Dummy data for testing
         Self {
-            chatrooms: vec![
-                ("Chatroom 1".to_owned(), "id1".to_owned()),
-                ("Room 2".to_owned(), "id2".to_owned()),
-            ],
-            selected_chatroom: "Chatroom 1".to_owned(),
+            rooms: Rooms::default(),
+            selected_chatroom: "".to_owned(),
             chatroom_search: "".to_owned(),
             message: "".to_owned(),
+            trigger_fetch_rooms: true,
+            trigger_fetch_messages: true,
         }
 
         // Default::default();
@@ -62,7 +64,7 @@ pub fn configure_fonts(ctx: &egui::Context) {
     // Load up the font
     font_def.font_data.insert(
         "Raleway".to_owned(),
-        FontData::from_static(include_bytes!("./fonts/Raleway-Regular.ttf")),
+        FontData::from_static(include_bytes!("../fonts/Raleway-Regular.ttf")),
     ); // .ttf and .otf supported
        // Put my font first (highest priority):
     font_def

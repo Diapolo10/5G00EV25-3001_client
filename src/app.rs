@@ -2,7 +2,7 @@ use eframe::egui::{Align, Layout};
 use eframe::App;
 use egui::style::Margin;
 
-use crate::{chatroom, side_pane, window_frame, ChatApp};
+use crate::{chatroom, side_pane, window_frame, ChatApp, HttpClient};
 
 impl App for ChatApp {
     //! Implement the app trait for the struct
@@ -15,7 +15,9 @@ impl App for ChatApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         let Self { .. } = self;
-        let title = "Chat App";
+        // Create the http client instance
+        let http_client = HttpClient::default();
+        let title = "EguiValet";
         window_frame(ctx, frame, title, |ui| {
             // Create layout and add the components
             ui.with_layout(Layout::left_to_right(Align::default()), |ui| {
@@ -29,7 +31,9 @@ impl App for ChatApp {
                 side_pane(
                     ctx,
                     ui,
-                    &mut self.chatrooms,
+                    &http_client,
+                    &mut self.trigger_fetch_rooms,
+                    &mut self.rooms,
                     &mut self.selected_chatroom,
                     &mut self.chatroom_search,
                 );
