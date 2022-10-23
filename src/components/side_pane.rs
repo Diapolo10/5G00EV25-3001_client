@@ -46,17 +46,22 @@ mod tests {
     }
 }
 
-fn create_room(http_client: &HttpClient, trigger_fetch: &mut bool, room_name: &str, room_public: bool) {
+fn create_room(
+    http_client: &HttpClient,
+    trigger_fetch: &mut bool,
+    room_name: &str,
+    room_public: bool,
+) {
     let room_id = Uuid::new_v4().to_string();
     let user_id = Uuid::new_v4().to_string();
     let body = Room {
         id: room_id,
         name: room_name.to_owned(),
         public: room_public,
-        owner: user_id.to_owned(),
+        owner: user_id,
     };
 
-    let _res = match http_client
+    match http_client
         .client
         .post(format!("{}{}", http_client.base_url, "api/v1/rooms"))
         .header(CONTENT_TYPE, "application/json")
@@ -67,12 +72,12 @@ fn create_room(http_client: &HttpClient, trigger_fetch: &mut bool, room_name: &s
             println!("{:#?}", res.json::<Room>());
             *trigger_fetch = true;
         }
-        Err(err) => println!("Post room error: {}", err.to_string()),
+        Err(err) => println!("Post room error: {}", err),
     };
 }
 
 fn fetch_rooms(http_client: &HttpClient) -> Rooms {
-    let _res = match http_client
+    match http_client
         .client
         .get(format!("{}{}", http_client.base_url, "api/v1/rooms"))
         .send()
@@ -88,7 +93,7 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
             }
         }
         Err(err) => {
-            println!("Fetch rooms error: {}", err.to_string());
+            println!("Fetch rooms error: {}", err);
             return Rooms { rooms: vec![] };
         }
     };
@@ -136,10 +141,6 @@ pub fn side_pane(
                 Stroke::new(1.0, text_color),
             );
             let row_height = ui.spacing().interact_size.y;
-
-            // let fetched_chatrooms = get_chatrooms();
-            // println!("{:#?}", fetched_chatrooms);
-
             // TextEdit for searching for a chatroom
             ui.add(
                 egui::TextEdit::singleline(chatroom_search)
@@ -149,7 +150,7 @@ pub fn side_pane(
                     .margin(Vec2 { x: 8., y: 4. }),
             );
             // Use bottom_up layout to add create chatroom functionality to the bottom
-            //  and leave the remaining space for chatroom scroll area
+            // and leave the remaining space for chatroom scroll area
             ui.with_layout(Layout::bottom_up(Align::Center), |ui| {
                 ui.add_space(28.);
                 ui.horizontal(|ui| {

@@ -11,19 +11,13 @@ pub struct Room {
 }
 
 /// For storing chatrooms in a vector
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Rooms {
     pub rooms: Vec<Room>,
 }
 
 impl Rooms {
     pub fn get_rooms(&self) -> &Vec<Room> {
-        return &self.rooms;
-    }
-}
-
-impl Default for Rooms {
-    fn default() -> Self {
-        Self { rooms: Vec::new() }
+        &self.rooms
     }
 }
