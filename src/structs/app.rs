@@ -15,6 +15,8 @@ pub struct ChatApp {
     pub selected_chatroom: String,
     pub chatroom_search: String,
     pub message: String,
+    pub trigger_fetch_rooms: bool,
+    pub trigger_fetch_messages: bool,
 }
 
 // impl Default for ChatApp {
@@ -48,6 +50,8 @@ impl ChatApp {
             selected_chatroom: "".to_owned(),
             chatroom_search: "".to_owned(),
             message: "".to_owned(),
+            trigger_fetch_rooms: true,
+            trigger_fetch_messages: true,
         }
 
         // Default::default();

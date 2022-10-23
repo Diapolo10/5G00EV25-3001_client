@@ -1,4 +1,3 @@
-use eframe::epaint::ahash::{HashMap, HashMapExt};
 use egui::{Align, Layout, Stroke, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
@@ -38,6 +37,7 @@ mod tests {
                 &ctx,
                 ui,
                 &http_client,
+                &mut true,
                 &mut rooms,
                 &mut "Chatroom 1".to_owned(),
                 &mut "chatroom".to_owned(),
@@ -46,7 +46,7 @@ mod tests {
     }
 }
 
-fn create_room(http_client: &HttpClient, room_name: &str, room_public: bool) {
+fn create_room(http_client: &HttpClient, trigger_fetch: &mut bool, room_name: &str, room_public: bool) {
     let room_id = Uuid::new_v4().to_string();
     let user_id = Uuid::new_v4().to_string();
     let body = Room {
@@ -63,8 +63,11 @@ fn create_room(http_client: &HttpClient, room_name: &str, room_public: bool) {
         .json(&body)
         .send()
     {
-        Ok(res) => println!("{:#?}", res.json::<Room>()),
-        Err(err) => println!("Post room error: {:#?}", err),
+        Ok(res) => {
+            println!("{:#?}", res.json::<Room>());
+            *trigger_fetch = true;
+        }
+        Err(err) => println!("Post room error: {}", err.to_string()),
     };
 }
 
@@ -80,7 +83,7 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
                 return Rooms { rooms: vec![] };
             } else {
                 let rooms = res.json::<Vec<Room>>().unwrap();
-                // println!("{:#?}", rooms);
+                println!("{:#?}", rooms);
                 return Rooms { rooms };
             }
         }
@@ -95,6 +98,7 @@ pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,
     http_client: &HttpClient,
+    trigger_fetch: &mut bool,
     rooms: &mut Rooms,
     selected_chatroom: &mut String,
     chatroom_search: &mut String,
@@ -102,7 +106,10 @@ pub fn side_pane(
     //! A component that takes up the left side of the screen.
     //! It shows user profile and all the available chatrooms with a search functionality.
 
-    *rooms = fetch_rooms(http_client);
+    if *trigger_fetch {
+        *rooms = fetch_rooms(http_client);
+        *trigger_fetch = false;
+    }
 
     // Use 20% of width for the side pane
     ui.allocate_ui_with_layout(
@@ -153,7 +160,7 @@ pub fn side_pane(
                     if button.clicked() {
                         let room_name = "New room";
                         let room_public = true;
-                        create_room(http_client, room_name, room_public);
+                        create_room(http_client, trigger_fetch, room_name, room_public);
                     }
                 });
                 ui.add_space(12.);

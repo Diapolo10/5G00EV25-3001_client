@@ -32,6 +32,7 @@ impl App for ChatApp {
                     ctx,
                     ui,
                     &http_client,
+                    &mut self.trigger_fetch_rooms,
                     &mut self.rooms,
                     &mut self.selected_chatroom,
                     &mut self.chatroom_search,
