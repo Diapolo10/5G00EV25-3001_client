@@ -85,18 +85,18 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
         Ok(res) => {
             if !res.status().is_success() {
                 println!("Error: {}", res.status());
-                return Rooms { rooms: vec![] };
+                Rooms { rooms: vec![] }
             } else {
                 let rooms = res.json::<Vec<Room>>().unwrap();
                 println!("{:#?}", rooms);
-                return Rooms { rooms };
+                Rooms { rooms }
             }
         }
         Err(err) => {
             println!("Fetch rooms error: {}", err);
-            return Rooms { rooms: vec![] };
+            Rooms { rooms: vec![] }
         }
-    };
+    }
 }
 
 pub fn side_pane(
