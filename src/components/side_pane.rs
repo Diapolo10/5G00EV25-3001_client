@@ -15,13 +15,22 @@ mod tests {
     fn some_test() {
         let ctx = egui::Context::default();
         let http_client = HttpClient::default();
+        let room_id = Uuid::new_v4().to_string();
+        let user_id = Uuid::new_v4().to_string();
+
+        let mut room = Room {
+            id: room_id.clone(),
+            name: "Chatroom 1".to_owned(),
+            public: true,
+            owner: user_id.clone(),
+        };
         let mut rooms = Rooms {
             rooms: vec![
                 Room {
-                    id: Uuid::new_v4().to_string(),
+                    id: room_id,
                     name: "Chatroom 1".to_owned(),
                     public: true,
-                    owner: Uuid::new_v4().to_string(),
+                    owner: user_id,
                 },
                 Room {
                     id: Uuid::new_v4().to_string(),
@@ -39,7 +48,7 @@ mod tests {
                 &http_client,
                 &mut true,
                 &mut rooms,
-                &mut "Chatroom 1".to_owned(),
+                &mut room,
                 &mut "chatroom".to_owned(),
             );
         });
@@ -52,13 +61,13 @@ fn create_room(
     room_name: &str,
     room_public: bool,
 ) {
-    let room_id = Uuid::new_v4().to_string();
-    let user_id = Uuid::new_v4().to_string();
+    let id = Uuid::new_v4().to_string();
+    let owner = Uuid::new_v4().to_string();
     let body = Room {
-        id: room_id,
+        id,
         name: room_name.to_owned(),
         public: room_public,
-        owner: user_id,
+        owner,
     };
 
     match http_client
@@ -105,7 +114,7 @@ pub fn side_pane(
     http_client: &HttpClient,
     trigger_fetch: &mut bool,
     rooms: &mut Rooms,
-    selected_chatroom: &mut String,
+    selected_chatroom: &mut Room,
     chatroom_search: &mut String,
 ) {
     //! A component that takes up the left side of the screen.
@@ -173,7 +182,7 @@ pub fn side_pane(
                         .show_rows(ui, row_height, rooms.rooms.len(), |ui, _row_range| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively
                             for i in rooms
-                                .get_rooms()
+                                .rooms
                                 .iter()
                                 .filter(|x| {
                                     x.name
@@ -182,14 +191,14 @@ pub fn side_pane(
                                 })
                                 .enumerate()
                             {
-                                let text = i.1;
+                                let room = i.1;
                                 let button = ui.add_sized(
                                     [ui.available_width(), 30.],
-                                    egui::Button::new(&text.name),
+                                    egui::Button::new(&room.name),
                                 );
                                 if button.clicked() {
-                                    *selected_chatroom = text.id.clone();
-                                    println!("{}", &text.id);
+                                    *selected_chatroom = room.clone();
+                                    println!("{:#?}", room);
                                 }
                             }
                         });

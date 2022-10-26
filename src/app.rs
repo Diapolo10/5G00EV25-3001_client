@@ -34,10 +34,10 @@ impl App for ChatApp {
                     &http_client,
                     &mut self.trigger_fetch_rooms,
                     &mut self.rooms,
-                    &mut self.selected_chatroom,
+                    &mut self.selected_room,
                     &mut self.chatroom_search,
                 );
-                chatroom(ctx, ui, &mut self.selected_chatroom, &mut self.message);
+                chatroom(ctx, ui, &self.selected_room, &mut self.message);
             });
         });
     }

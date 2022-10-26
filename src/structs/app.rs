@@ -5,14 +5,14 @@ use eframe::egui::{
     TextStyle::{Body, Button, Heading, Monospace, Small},
 };
 
-use crate::Rooms;
+use crate::{Room, Rooms};
 
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
     pub rooms: Rooms,
-    pub selected_chatroom: String,
+    pub selected_room: Room,
     pub chatroom_search: String,
     pub message: String,
     pub trigger_fetch_rooms: bool,
@@ -47,7 +47,7 @@ impl ChatApp {
         // Dummy data for testing
         Self {
             rooms: Rooms::default(),
-            selected_chatroom: "".to_owned(),
+            selected_room: Room::default(),
             chatroom_search: "".to_owned(),
             message: "".to_owned(),
             trigger_fetch_rooms: true,
