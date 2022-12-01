@@ -153,11 +153,9 @@ pub fn chatroom(
                     [ui.available_width() * 0.2, ui.available_height() * 0.5],
                     egui::Button::new("Send"),
                 );
-                if button.clicked() {
-                    if message.len() > 0 {
-                        send_message(http_client, trigger_fetch, &mut selected_room.id, message);
-                        message.clear();
-                    }
+                if button.clicked() && !message.is_empty() {
+                    send_message(http_client, trigger_fetch, &mut selected_room.id, message);
+                    message.clear();
                 }
             });
             ui.add_space(5.);

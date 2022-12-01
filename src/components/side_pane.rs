@@ -113,6 +113,7 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,
