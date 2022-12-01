@@ -7,11 +7,14 @@ use eframe::egui::{
 
 use crate::{Room, Rooms};
 
+use super::message::Messages;
+
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
     pub rooms: Rooms,
+    pub messages: Messages,
     pub selected_room: Room,
     pub chatroom_search: String,
     pub message: String,
@@ -47,11 +50,12 @@ impl ChatApp {
         // Dummy data for testing
         Self {
             rooms: Rooms::default(),
+            messages: Messages::default(),
             selected_room: Room::default(),
             chatroom_search: "".to_owned(),
             message: "".to_owned(),
             trigger_fetch_rooms: true,
-            trigger_fetch_messages: true,
+            trigger_fetch_messages: false,
         }
 
         // Default::default();

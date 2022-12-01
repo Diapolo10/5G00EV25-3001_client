@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// Defines fields for a room. Used for fetching and posting chatrooms
 /// as well as storing them in a vector in an instance of Rooms.
-#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+#[derive(Deserialize, Serialize, Debug, Default, Clone, PartialEq)]
 pub struct Room {
     pub id: String,
     pub name: String,

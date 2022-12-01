@@ -33,11 +33,20 @@ impl App for ChatApp {
                     ui,
                     &http_client,
                     &mut self.trigger_fetch_rooms,
+                    &mut self.trigger_fetch_messages,
                     &mut self.rooms,
                     &mut self.selected_room,
                     &mut self.chatroom_search,
                 );
-                chatroom(ctx, ui, &self.selected_room, &mut self.message);
+                chatroom(
+                    ctx,
+                    ui,
+                    &http_client,
+                    &mut self.trigger_fetch_messages,
+                    &mut self.messages,
+                    &mut self.selected_room,
+                    &mut self.message,
+                );
             });
         });
     }
