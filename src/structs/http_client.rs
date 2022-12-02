@@ -10,7 +10,7 @@ impl Default for HttpClient {
     fn default() -> Self {
         Self {
             client: reqwest::blocking::Client::new(),
-            base_url: "http://127.0.0.1:8080/".to_owned(),
+            base_url: "http://127.0.0.1:11037/".to_owned(),
         }
     }
 }

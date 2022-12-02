@@ -15,13 +15,22 @@ mod tests {
     fn some_test() {
         let ctx = egui::Context::default();
         let http_client = HttpClient::default();
+        let room_id = Uuid::new_v4().to_string();
+        let user_id = Uuid::new_v4().to_string();
+
+        let mut room = Room {
+            id: room_id.clone(),
+            name: "Chatroom 1".to_owned(),
+            public: true,
+            owner: user_id.clone(),
+        };
         let mut rooms = Rooms {
             rooms: vec![
                 Room {
-                    id: Uuid::new_v4().to_string(),
+                    id: room_id,
                     name: "Chatroom 1".to_owned(),
                     public: true,
-                    owner: Uuid::new_v4().to_string(),
+                    owner: user_id,
                 },
                 Room {
                     id: Uuid::new_v4().to_string(),
@@ -38,8 +47,9 @@ mod tests {
                 ui,
                 &http_client,
                 &mut true,
+                &mut true,
                 &mut rooms,
-                &mut "Chatroom 1".to_owned(),
+                &mut room,
                 &mut "chatroom".to_owned(),
             );
         });
@@ -52,13 +62,13 @@ fn create_room(
     room_name: &str,
     room_public: bool,
 ) {
-    let room_id = Uuid::new_v4().to_string();
-    let user_id = Uuid::new_v4().to_string();
+    let id = Uuid::new_v4().to_string();
+    let owner = Uuid::new_v4().to_string();
     let body = Room {
-        id: room_id,
+        id,
         name: room_name.to_owned(),
         public: room_public,
-        owner: user_id,
+        owner,
     };
 
     match http_client
@@ -69,8 +79,12 @@ fn create_room(
         .send()
     {
         Ok(res) => {
-            println!("{:#?}", res.json::<Room>());
-            *trigger_fetch = true;
+            if !res.status().is_success() {
+                println!("Post room error: {}", res.status());
+            } else {
+                println!("Room created: {:#?}", res.json::<Room>());
+                *trigger_fetch = true;
+            }
         }
         Err(err) => println!("Post room error: {}", err),
     };
@@ -84,10 +98,10 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
     {
         Ok(res) => {
             if !res.status().is_success() {
-                println!("Error: {}", res.status());
+                println!("Fetch rooms error: {}", res.status());
                 Rooms { rooms: vec![] }
             } else {
-                let rooms = res.json::<Vec<Room>>().unwrap();
+                let rooms = res.json::<Vec<Room>>().unwrap_or_default();
                 println!("{:#?}", rooms);
                 Rooms { rooms }
             }
@@ -99,21 +113,24 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn side_pane(
     ctx: &egui::Context,
     ui: &mut Ui,
     http_client: &HttpClient,
-    trigger_fetch: &mut bool,
+    trigger_fetch_rooms: &mut bool,
+    trigger_fetch_messages: &mut bool,
     rooms: &mut Rooms,
-    selected_chatroom: &mut String,
+    selected_room: &mut Room,
     chatroom_search: &mut String,
 ) {
     //! A component that takes up the left side of the screen.
     //! It shows user profile and all the available chatrooms with a search functionality.
 
-    if *trigger_fetch {
+    // Fetch rooms when opening app and when new room is created (TODO: fetch when deleted)
+    if *trigger_fetch_rooms {
         *rooms = fetch_rooms(http_client);
-        *trigger_fetch = false;
+        *trigger_fetch_rooms = false;
     }
 
     // Use 20% of width for the side pane
@@ -140,7 +157,6 @@ pub fn side_pane(
                 ],
                 Stroke::new(1.0, text_color),
             );
-            let row_height = ui.spacing().interact_size.y;
             // TextEdit for searching for a chatroom
             ui.add(
                 egui::TextEdit::singleline(chatroom_search)
@@ -161,19 +177,22 @@ pub fn side_pane(
                     if button.clicked() {
                         let room_name = "New room";
                         let room_public = true;
-                        create_room(http_client, trigger_fetch, room_name, room_public);
+                        create_room(http_client, trigger_fetch_rooms, room_name, room_public);
                     }
                 });
                 ui.add_space(12.);
-                // ScrollArea to host all chatrooms as buttons
+
+                let row_height = ui.spacing().interact_size.y;
+                let total_rows = rooms.rooms.len();
                 ui.with_layout(Layout::top_down(Align::Center), |ui| {
+                    // ScrollArea to host all chatrooms as buttons
                     egui::ScrollArea::vertical()
                         .id_source("side_pane")
                         .max_width(ui.available_width())
-                        .show_rows(ui, row_height, rooms.rooms.len(), |ui, _row_range| {
+                        .show_rows(ui, row_height, total_rows, |ui, _row_range| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively
                             for i in rooms
-                                .get_rooms()
+                                .rooms
                                 .iter()
                                 .filter(|x| {
                                     x.name
@@ -182,14 +201,15 @@ pub fn side_pane(
                                 })
                                 .enumerate()
                             {
-                                let text = i.1;
+                                let room = i.1;
                                 let button = ui.add_sized(
                                     [ui.available_width(), 30.],
-                                    egui::Button::new(&text.name),
+                                    egui::Button::new(&room.name),
                                 );
                                 if button.clicked() {
-                                    *selected_chatroom = text.id.clone();
-                                    println!("{}", &text.id);
+                                    *selected_room = room.clone();
+                                    *trigger_fetch_messages = true;
+                                    println!("{:#?}", room);
                                 }
                             }
                         });
