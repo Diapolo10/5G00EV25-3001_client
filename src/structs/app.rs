@@ -5,7 +5,7 @@ use eframe::egui::{
     TextStyle::{Body, Button, Heading, Monospace, Small},
 };
 
-use crate::{Room, Rooms};
+use crate::{Room, Rooms, User};
 
 use super::message::Messages;
 
@@ -13,6 +13,7 @@ use super::message::Messages;
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
+    pub user_info: User,
     pub rooms: Rooms,
     pub messages: Messages,
     pub selected_room: Room,
@@ -49,6 +50,7 @@ impl ChatApp {
 
         // Dummy data for testing
         Self {
+            user_info: User::default(),
             rooms: Rooms::default(),
             messages: Messages::default(),
             selected_room: Room::default(),
@@ -90,8 +92,8 @@ pub fn configure_text_styles(ctx: &egui::Context) {
     let mut style = (*ctx.style()).clone();
     // Redefine text_styles
     style.text_styles = [
-        (Heading, FontId::new(30.0, Proportional)),
-        (Body, FontId::new(18.0, Proportional)),
+        (Heading, FontId::new(34.0, Proportional)),
+        (Body, FontId::new(20.0, Proportional)),
         (Monospace, FontId::new(14.0, Proportional)),
         (Button, FontId::new(20.0, Proportional)),
         (Small, FontId::new(10.0, Proportional)),

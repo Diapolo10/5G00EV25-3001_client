@@ -1,6 +1,6 @@
 //! Crate documentation goes here
 mod structs;
-pub use structs::{ChatApp, HttpClient, Room, Rooms};
+pub use structs::{ChatApp, HttpClient, Room, Rooms, User};
 mod app;
 mod components;
-pub use components::{chatroom, side_pane, window_frame};
+pub use components::{chatroom, loginpage, side_pane, window_frame};
