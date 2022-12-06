@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 use serde::{Deserialize, Serialize};
 
 /// Define fields for user. Used for creating and logging users.
@@ -12,7 +13,14 @@ pub struct User {
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
+=======
+use serde::{Deserialize, Serialize};
+
+// Define fields for user. Used for creating and logging users.
+#[derive(Deserialize, Serialize, Debug, Default, Clone, PartialEq, Eq)]
+>>>>>>> bb197f8 (Add user_id to user struct an add documentation)
 pub struct User {
+    pub user_id: String,
     pub username: String,
     pub email: String,
 >>>>>>> 52bf42c (User struct and loginpage created)
@@ -20,6 +28,7 @@ pub struct User {
     pub token: String,
     pub is_logged_in: bool,
 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -35,3 +44,5 @@ impl Default for User {
     }
 }
 >>>>>>> 52bf42c (User struct and loginpage created)
+=======
+>>>>>>> bb197f8 (Add user_id to user struct an add documentation)
