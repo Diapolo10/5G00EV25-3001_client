@@ -1,5 +1,4 @@
 mod chatroom;
-pub mod loginpage;
 pub use chatroom::chatroom;
 
 mod loginpage;
