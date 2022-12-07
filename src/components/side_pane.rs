@@ -141,7 +141,7 @@ pub fn side_pane(
         },
         Layout::top_down(Align::Center),
         |ui| {
-            ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 10. };
+            ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 8. };
             ui.add_space(10.);
             ui.heading("User profile");
             ui.add_space(10.);
@@ -181,15 +181,12 @@ pub fn side_pane(
                     }
                 });
                 ui.add_space(12.);
-
-                let row_height = ui.spacing().interact_size.y;
-                let total_rows = rooms.rooms.len();
                 ui.with_layout(Layout::top_down(Align::Center), |ui| {
                     // ScrollArea to host all chatrooms as buttons
                     egui::ScrollArea::vertical()
                         .id_source("side_pane")
                         .max_width(ui.available_width())
-                        .show_rows(ui, row_height, total_rows, |ui, _row_range| {
+                        .show(ui,|ui| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively
                             for i in rooms
                                 .rooms
