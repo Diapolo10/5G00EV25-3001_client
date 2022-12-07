@@ -2,15 +2,9 @@ use eframe::egui::{Align, Layout};
 use eframe::App;
 use egui::style::Margin;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 use crate::{chatroom, loginpage, side_pane, window_frame, ChatApp, HttpClient};
-=======
-use crate::{chatroom, loginpage::loginpage, side_pane, window_frame, ChatApp, HttpClient};
->>>>>>> 52bf42c (User struct and loginpage created)
-=======
-use crate::{chatroom, loginpage, side_pane, window_frame, ChatApp, HttpClient};
->>>>>>> 635e83a (Chatroom layout, more documentation and README instructions added)
+
+
 
 impl App for ChatApp {
     //! Implement the app trait for the struct
@@ -58,15 +52,7 @@ impl App for ChatApp {
                         ctx,
                         ui,
                         &http_client,
-                        &mut self.trigger_fetch_messages,
-<<<<<<< HEAD
-<<<<<<< HEAD
                         &self.user_info,
-=======
->>>>>>> 52bf42c (User struct and loginpage created)
-=======
-                        &self.user_info,
->>>>>>> 635e83a (Chatroom layout, more documentation and README instructions added)
                         &mut self.messages,
                         &mut self.selected_room,
                         &mut self.message,
