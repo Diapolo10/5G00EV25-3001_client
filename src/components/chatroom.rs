@@ -1,5 +1,5 @@
 use chrono::prelude::*;
-use egui::{style::Spacing, Align, Color32, Direction, Layout, Ui, Vec2};
+use egui::{Align, Color32, Direction, Layout, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
@@ -114,6 +114,7 @@ fn fetch_messages(http_client: &HttpClient, room_id: &mut String) -> Messages {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn chatroom(
     _ctx: &egui::Context,
     ui: &mut Ui,
@@ -171,12 +172,9 @@ pub fn chatroom(
             });
             ui.add_space(5.);
             // Print chatroom
-            let text_style = egui::TextStyle::Body;
-            let row_height = ui.text_style_height(&text_style);
-            // let row_height = ui.spacing().interact_size.y; // if you are adding buttons instead of labels.
             ui.with_layout(Layout::top_down(Align::Center), |ui| {
                 ui.add_space(8.);
-                ui.heading(format!("{}", &selected_room.name));
+                ui.heading( &selected_room.name);
                 ui.add_space(8.);
                 egui::ScrollArea::vertical()
                     .id_source("chatroom")
