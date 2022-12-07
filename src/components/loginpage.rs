@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 pub fn loginpage(_ctx: &egui::Context, ui: &mut Ui, user_info: &mut User) {
     //! A component shown to an unauthorized user. It takes the entire screen
-    //! and will disappear once user is logged in
+    //! and will disappear once user is logged in.
     ui.allocate_ui_with_layout(
         Vec2 {
             x: ui.available_width() * 0.33,
@@ -39,7 +39,7 @@ pub fn loginpage(_ctx: &egui::Context, ui: &mut Ui, user_info: &mut User) {
                 user_id,
                 username: user_info.username.clone(),
                 email: user_info.email.clone(),
-                password: user_info.password.clone(),
+                password: "".to_owned(),
                 token: user_info.token.clone(),
                 is_logged_in: true,
             };

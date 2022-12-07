@@ -16,3 +16,9 @@ Project can be run from the project root folder with command
 ```console
 cargo run
 ```
+
+Rust documentation can be opened with command 
+
+```console
+cargo doc --open --no-deps
+```

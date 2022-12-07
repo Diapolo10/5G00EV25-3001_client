@@ -1,11 +1,11 @@
 use chrono::prelude::*;
-use egui::{Align, Direction, Layout, Ui, Vec2};
+use egui::{style::Spacing, Align, Color32, Direction, Layout, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
 use crate::{
     structs::{Message, Messages, ResMessage},
-    HttpClient, Room,
+    HttpClient, Room, User,
 };
 
 // Tests for chatroom component
@@ -13,13 +13,14 @@ use crate::{
 mod tests {
     use uuid::Uuid;
 
-    use crate::{chatroom, structs::Messages, HttpClient, Room};
+    use crate::{chatroom, structs::Messages, HttpClient, Room, User};
 
     #[test]
     fn some_test() {
         let ctx = egui::Context::default();
         let http_client = HttpClient::default();
         let mut messages = Messages::default();
+        let mut user = User::default();
 
         let mut room = Room {
             id: Uuid::new_v4().to_string(),
@@ -34,6 +35,7 @@ mod tests {
                 ui,
                 &http_client,
                 &mut true,
+                &mut user,
                 &mut messages,
                 &mut room,
                 &mut "New message".to_owned(),
@@ -45,17 +47,17 @@ mod tests {
 fn send_message(
     http_client: &HttpClient,
     trigger_fetch: &mut bool,
+    user_id: &String,
     room_id: &mut String,
     message: &mut String,
 ) {
     let id = Uuid::new_v4().to_string();
-    let user_id = Uuid::new_v4().to_string();
     let mut current_time = Local::now().to_string();
     // Cut timezone from current_time variable
     current_time = current_time[0..current_time.len() - 7].to_string();
     let body = Message {
         id,
-        user_id,
+        user_id: user_id.to_owned(),
         room_id: room_id.to_owned(),
         message: message.to_owned(),
         creation_time: current_time.to_owned(),
@@ -117,6 +119,7 @@ pub fn chatroom(
     ui: &mut Ui,
     http_client: &HttpClient,
     trigger_fetch: &mut bool,
+    user_info: &User,
     messages: &mut Messages,
     selected_room: &mut Room,
     message: &mut String,
@@ -143,10 +146,12 @@ pub fn chatroom(
                     egui::TextEdit::multiline(message)
                         .id_source("user_message")
                         .hint_text("Message ".to_owned() + &selected_room.name)
-                        .desired_width(ui.available_width() * 0.8)
+                        .desired_width(ui.available_width() * 0.9)
                         .desired_rows(desired_height_rows)
                         .margin(Vec2 { x: 8., y: 4. }),
                 );
+                // Add space before the send button
+                ui.add_space(ui.available_width() * 0.1);
                 // Change this back to a smaller size before creating the button
                 ui.style_mut().spacing.interact_size.y = 20.;
                 let button = ui.add_sized(
@@ -154,26 +159,65 @@ pub fn chatroom(
                     egui::Button::new("Send"),
                 );
                 if button.clicked() && !message.is_empty() {
-                    send_message(http_client, trigger_fetch, &mut selected_room.id, message);
+                    send_message(
+                        http_client,
+                        trigger_fetch,
+                        &user_info.user_id,
+                        &mut selected_room.id,
+                        message,
+                    );
                     message.clear();
                 }
             });
             ui.add_space(5.);
-            // Print messages
+            // Print chatroom
             let text_style = egui::TextStyle::Body;
             let row_height = ui.text_style_height(&text_style);
             // let row_height = ui.spacing().interact_size.y; // if you are adding buttons instead of labels.
-            let total_rows = messages.messages.len();
             ui.with_layout(Layout::top_down(Align::Center), |ui| {
-                ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 5. };
-                ui.heading(format!("{}{}", "Current chatroom: ", &selected_room.name));
+                ui.add_space(8.);
+                ui.heading(format!("{}", &selected_room.name));
+                ui.add_space(8.);
                 egui::ScrollArea::vertical()
                     .id_source("chatroom")
-                    .max_width(f32::INFINITY)
-                    .show_rows(ui, row_height, total_rows, |ui, row_range| {
-                        for row in row_range {
-                            let text = &messages.messages[row].message;
-                            ui.label(text);
+                    .max_width(ui.available_width())
+                    .show(ui, |ui| {
+                        for row in messages.messages.iter().enumerate() {
+                            let message: &ResMessage = row.1;
+                            let text = &message.message;
+                            let creation_time = &mut message.creation_time[0..10].to_owned();
+                            creation_time.push_str("  ");
+                            creation_time.push_str(&message.creation_time[11..19]);
+
+                            egui::containers::Frame::none()
+                                .outer_margin(egui::style::Margin {
+                                    left: 5.,
+                                    right: 5.,
+                                    top: 8.,
+                                    bottom: 8.,
+                                })
+                                .inner_margin(egui::style::Margin {
+                                    left: 5.,
+                                    right: 5.,
+                                    top: 2.,
+                                    bottom: 2.,
+                                })
+                                .rounding(egui::Rounding {
+                                    nw: 5.0,
+                                    ne: 5.0,
+                                    sw: 5.0,
+                                    se: 5.0,
+                                })
+                                .fill(Color32::DARK_GRAY)
+                                .show(ui, |ui| {
+                                    ui.vertical_centered_justified(|ui| {
+                                        // TODO: Show own messages on the right side and messages from others on the left
+                                        ui.style_mut().spacing.item_spacing =
+                                            Vec2 { x: 10., y: 10. };
+                                        ui.label(creation_time.to_owned());
+                                        ui.label(text);
+                                    });
+                                });
                         }
                     });
             })

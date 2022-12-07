@@ -1,4 +1,4 @@
-//! Crate documentation goes here
+//! EguiValet chat app
 mod structs;
 pub use structs::{ChatApp, HttpClient, Room, Rooms, User};
 mod app;
