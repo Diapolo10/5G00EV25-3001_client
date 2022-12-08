@@ -22,3 +22,8 @@ Rust documentation can be opened with command
 ```console
 cargo doc --open --no-deps
 ```
+
+I recommend running the command with --no-deps option
+as long as you don't need documentation for the dependencies.
+
+More thorough documentation on the app can be found in the docs folder.
