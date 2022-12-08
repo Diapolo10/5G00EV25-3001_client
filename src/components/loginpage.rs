@@ -1,10 +1,15 @@
 use crate::User;
 use egui::{Align, Layout, Ui, Vec2};
+<<<<<<< HEAD
 use uuid::Uuid;
 
 pub fn loginpage(_ctx: &egui::Context, ui: &mut Ui, user_info: &mut User) {
     //! A component shown to an unauthorized user. It takes the entire screen
     //! and will disappear once user is logged in.
+=======
+
+pub fn loginpage(_ctx: &egui::Context, ui: &mut Ui, user_info: &mut User) {
+>>>>>>> 52bf42c (User struct and loginpage created)
     ui.allocate_ui_with_layout(
         Vec2 {
             x: ui.available_width() * 0.33,
@@ -34,12 +39,19 @@ pub fn loginpage(_ctx: &egui::Context, ui: &mut Ui, user_info: &mut User) {
             // Login user
             println!("{}", &mut user_info.username);
             println!("{}", &mut user_info.password);
+<<<<<<< HEAD
             let user_id = Uuid::new_v4().to_string();
             *user_info = User {
                 user_id,
                 username: user_info.username.clone(),
                 email: user_info.email.clone(),
                 password: "".to_owned(),
+=======
+            *user_info = User {
+                username: user_info.username.clone(),
+                email: user_info.email.clone(),
+                password: user_info.password.clone(),
+>>>>>>> 52bf42c (User struct and loginpage created)
                 token: user_info.token.clone(),
                 is_logged_in: true,
             };
