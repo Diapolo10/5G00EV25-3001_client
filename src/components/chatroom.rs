@@ -1,9 +1,5 @@
 use chrono::prelude::*;
-<<<<<<< HEAD
 use egui::{Align, Color32, Direction, Layout, Ui, Vec2};
-=======
-use egui::{style::Spacing, Align, Color32, Direction, Layout, Ui, Vec2};
->>>>>>> 635e83a (Chatroom layout, more documentation and README instructions added)
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
@@ -176,18 +172,10 @@ pub fn chatroom(
             });
             ui.add_space(5.);
             // Print chatroom
-<<<<<<< HEAD
+
             ui.with_layout(Layout::top_down(Align::Center), |ui| {
                 ui.add_space(8.);
-                ui.heading( &selected_room.name);
-=======
-            let text_style = egui::TextStyle::Body;
-            let row_height = ui.text_style_height(&text_style);
-            // let row_height = ui.spacing().interact_size.y; // if you are adding buttons instead of labels.
-            ui.with_layout(Layout::top_down(Align::Center), |ui| {
-                ui.add_space(8.);
-                ui.heading(format!("{}", &selected_room.name));
->>>>>>> 635e83a (Chatroom layout, more documentation and README instructions added)
+                ui.heading(&selected_room.name);
                 ui.add_space(8.);
                 egui::ScrollArea::vertical()
                     .id_source("chatroom")
