@@ -7,7 +7,7 @@ This document contains the documentation for the EguiValet Client project.
 - [1. Introduction](#1-introduction)
 - [2. General information](#2-general-information)
   - [2.1. Design](#21-design)
-  - [2.2. Functional requirements](#22-functional-requirements)
+  - [2.2. Project requirements and Scrum](#22-project-requirements-and-scrum)
 - [3. Installation](#3-installation)
 - [4. Development](#4-development)
   - [4.1. Project file structure](#41-project-file-structure)
@@ -29,17 +29,20 @@ instruct you on the development and how to use the app.
 ## 2. General information
 
 The client is written in Rust and using the Egui framework, but it's still super bare-boned
-and missing important functionality. 
+and missing important functionality. We chose Rust because it's the most liked programming language
+and we wanted to learn more about it. Egui was chosen simply because it seemed like it was easy to use,
+even though it's still in development.
 
 The [Git repository](https://github.com/Diapolo10/5G00EV25-3001_server) for the server half of the project.
 
 ### 2.1 Design
 
-The original rough design for the UI can be found [here](https://www.figma.com/file/1pDmm10dDVeWY5wwZdLglZ/ChatAppDraft)
+The original rough design for the UI can be found [here](https://www.figma.com/file/1pDmm10dDVeWY5wwZdLglZ/ChatAppDraft).
 
-### 2.2 Functional requirements
+### 2.2 Project requirements and Scrum
 
-Coming soon..
+The [GitHub project page](https://github.com/users/Diapolo10/projects/1) shows all the issues and sprints during the course. 
+The issues in the project page are described well and can be viewed as functional requirements.
 
 ## 3. Installation
 
@@ -61,7 +64,7 @@ If one doesn't exist or it's outdated, you'll likely need to install from source
     curl -LO https://github.com/Diapolo10/5G00EV25-3001_client/archive/refs/heads/main.zip -o main.zip
 ```
 2. Unpack the downloaded ZIP-file to a convenient location
-3. For instructions on how to run the application go to section 4
+3. For instructions on how to run the application go to section 5
 
 ## 4. Development
 
