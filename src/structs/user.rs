@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Define fields for user. Used for creating and logging users.
+/// Define fields for user. Used for creating and logging users in as well as storing non-sensitive information.
 #[derive(Deserialize, Serialize, Debug, Default, Clone, PartialEq, Eq)]
 pub struct User {
     pub user_id: String,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Defines fields for a message. Used for fetching and posting messages
+/// Defines fields for a message. Used for receiving and posting messages
 /// as well as storing them in a vector in an instance of Messages.
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Message {
