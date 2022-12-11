@@ -42,7 +42,7 @@ The original rough design for the UI can be found [here](https://www.figma.com/f
 ### 2.2 Project requirements and Scrum
 
 The [GitHub project page](https://github.com/users/Diapolo10/projects/1) shows all the issues and sprints during the course. 
-The issues in the project page are described well and can be viewed as functional requirements.
+Most of the issues in the project page are described well, have linked pull requests and can be viewed as functional requirements.
 
 ## 3. Installation
 
@@ -143,11 +143,6 @@ files.
 
 The `docs` directory contains the documentation, which you are reading right now.
 
-```text
-📂docs
- ┣ 📜index.md
-```
-
 ### 4.1.3 Source directory
 
 The src directory contains the project's source code. The source code is well commented
@@ -226,7 +221,7 @@ and the release and bench profiles are stored in the release directory. Some com
 place their output in dedicated directories in the top level of the target directory.
 
 - `debug`
-    Contains output for the dev profile.
+    Contains output for the dev and test profiles.
 
 - `doc`
     Contains rustdoc documentation.
@@ -237,9 +232,10 @@ Rust generates documentation for the local package and all dependencies if wante
 The output is placed in target/doc in rustdoc's usual format. The documentation can be opened in browser with command
 
 ```console
-cargo doc --open
+cargo doc --open --no-deps
 ```
-I recommend running the command with --no-deps option as long as you don't need documentation for the dependencies.
+
+I recommend running the command with the --no-deps option as long as you don't need documentation for the dependencies.
 
 ## 5. Usage
 
