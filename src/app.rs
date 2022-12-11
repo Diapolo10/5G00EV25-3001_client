@@ -4,8 +4,6 @@ use egui::style::Margin;
 
 use crate::{chatroom, loginpage, side_pane, window_frame, ChatApp, HttpClient};
 
-
-
 impl App for ChatApp {
     //! Implement the app trait for the struct
 
@@ -36,7 +34,13 @@ impl App for ChatApp {
                 };
                 // Show login page if no token is found / user isn't logged in
                 if !self.user_info.is_logged_in {
-                    loginpage(ctx, ui, &mut self.user_info);
+                    loginpage(
+                        ctx,
+                        ui,
+                        &http_client,
+                        &mut self.user_info,
+                        &mut self.signupmode,
+                    );
                 } else {
                     side_pane(
                         ctx,
