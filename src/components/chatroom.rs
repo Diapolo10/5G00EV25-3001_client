@@ -212,21 +212,28 @@ pub fn chatroom(
                         for row in messages.messages.iter().enumerate() {
                             let message: &ResMessage = row.1;
                             let text = &message.message;
-                            let creation_time = &mut message.creation_time[0..10].to_owned();
-                            creation_time.push_str("  ");
-                            creation_time.push_str(&message.creation_time[11..19]);
+                            let creation_date = message.creation_time[0..10].to_owned();
+                            let creation_time = message.creation_time[11..16].to_owned();
+                            // Show date on first message and every time message creation date changes
+                            if row.0 == 0 {
+                                ui.label(creation_date);
+                            } else if !creation_date
+                                .eq(&messages.messages[row.0 - 1].creation_time[0..10].to_owned())
+                            {
+                                ui.label(creation_date);
+                            }
                             egui::containers::Frame::none()
                                 .outer_margin(egui::style::Margin {
                                     left: 5.,
                                     right: 5.,
-                                    top: 8.,
-                                    bottom: 8.,
+                                    top: 3.,
+                                    bottom: 3.,
                                 })
                                 .inner_margin(egui::style::Margin {
                                     left: 5.,
                                     right: 5.,
-                                    top: 2.,
-                                    bottom: 2.,
+                                    top: 3.,
+                                    bottom: 3.,
                                 })
                                 .rounding(egui::Rounding {
                                     nw: 5.0,
@@ -234,13 +241,12 @@ pub fn chatroom(
                                     sw: 5.0,
                                     se: 5.0,
                                 })
-                                .fill(Color32::DARK_GRAY)
+                                .fill(Color32::from_rgb(50, 50, 50))
                                 .show(ui, |ui| {
                                     ui.vertical_centered_justified(|ui| {
                                         // TODO: Show own messages on the right side and messages from others on the left
-                                        ui.style_mut().spacing.item_spacing =
-                                            Vec2 { x: 10., y: 10. };
-                                        ui.label(creation_time.to_owned());
+                                        ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 5. };
+                                        ui.label(creation_time);
                                         ui.label(text);
                                     });
                                 });
