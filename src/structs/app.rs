@@ -19,8 +19,10 @@ pub struct ChatApp {
     pub messages: Messages,
     pub selected_room: Room,
     pub chatroom_search: String,
+    pub new_chatroom: String,
     pub message: String,
     pub signupmode: bool,
+    pub show_modal: bool,
     pub trigger_fetch_rooms: bool,
     pub trigger_fetch_messages: bool,
 }
@@ -50,20 +52,20 @@ impl ChatApp {
         configure_fonts(&cc.egui_ctx);
         configure_text_styles(&cc.egui_ctx);
 
-        // Dummy data for testing
         Self {
             user_info: User::default(),
             rooms: Rooms::default(),
             messages: Messages::default(),
             selected_room: Room::default(),
             chatroom_search: "".to_owned(),
+            new_chatroom: "".to_owned(),
             message: "".to_owned(),
             signupmode: false,
+            show_modal: false,
             trigger_fetch_rooms: true,
             trigger_fetch_messages: false,
         }
 
-        // Default::default();
     }
 }
 

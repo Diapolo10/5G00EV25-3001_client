@@ -73,7 +73,7 @@ pub fn window_frame(
             rect.min.y = title_bar_rect.max.y;
             rect
         }
-        .shrink(3.0);
+        .shrink(8.);
         let mut content_ui = ui.child_ui(content_rect, *ui.layout());
         add_contents(&mut content_ui);
     });
