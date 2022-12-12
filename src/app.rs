@@ -1,6 +1,5 @@
 use eframe::egui::{Align, Layout};
 use eframe::App;
-use egui::style::Margin;
 
 use crate::{chatroom, loginpage, side_pane, window_frame, ChatApp, HttpClient};
 
@@ -25,13 +24,6 @@ impl App for ChatApp {
         window_frame(ctx, frame, title, |ui| {
             // Create layout and add the components
             ui.with_layout(Layout::left_to_right(Align::default()), |ui| {
-                // TODO: Add margin around the contents inside window_frame (this is not working)
-                ui.style_mut().spacing.window_margin = Margin {
-                    left: 5.,
-                    top: 5.,
-                    right: 5.,
-                    bottom: 5.,
-                };
                 // Show login page if no token is found / user isn't logged in
                 if !self.user_info.is_logged_in {
                     loginpage(
@@ -48,14 +40,18 @@ impl App for ChatApp {
                         &http_client,
                         &mut self.trigger_fetch_rooms,
                         &mut self.trigger_fetch_messages,
+                        &mut self.show_modal,
+                        &mut self.user_info,
                         &mut self.rooms,
                         &mut self.selected_room,
                         &mut self.chatroom_search,
+                        &mut self.new_chatroom,
                     );
                     chatroom(
                         ctx,
                         ui,
                         &http_client,
+                        &mut self.trigger_fetch_rooms,
                         &mut self.trigger_fetch_messages,
                         &self.user_info,
                         &mut self.messages,

@@ -34,6 +34,7 @@ mod tests {
                 &ctx,
                 ui,
                 &http_client,
+                &mut false,
                 &mut true,
                 &mut user,
                 &mut messages,
@@ -114,12 +115,35 @@ fn fetch_messages(http_client: &HttpClient, room_id: &mut String) -> Messages {
     }
 }
 
+fn delete_room(http_client: &HttpClient, trigger_fetch: &mut bool, selected_room: &mut Room) {
+    match http_client
+        .client
+        .delete(format!(
+            "{}{}{}",
+            http_client.base_url, "api/v1/rooms/", selected_room.id
+        ))
+        .send()
+    {
+        Ok(res) => {
+            if !res.status().is_success() {
+                println!("Delete room error: {}", res.status());
+            } else {
+                println!("Room deleted");
+                *selected_room = Room::default();
+                *trigger_fetch = true;
+            }
+        }
+        Err(err) => println!("Delete room error: {}", err),
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn chatroom(
     _ctx: &egui::Context,
     ui: &mut Ui,
     http_client: &HttpClient,
-    trigger_fetch: &mut bool,
+    trigger_fetch_rooms: &mut bool,
+    trigger_fetch_messages: &mut bool,
     user_info: &User,
     messages: &mut Messages,
     selected_room: &mut Room,
@@ -128,9 +152,9 @@ pub fn chatroom(
     //! A component where chatroom is opened and all the messages are shown.
     //! It takes up a majority of the screen.
 
-    if *trigger_fetch {
+    if *trigger_fetch_messages {
         *messages = fetch_messages(http_client, &mut selected_room.id);
-        *trigger_fetch = false;
+        *trigger_fetch_messages = false;
     }
 
     // If user has selected a room
@@ -141,7 +165,6 @@ pub fn chatroom(
             // The initial height of horizontal layout is "ui.style_mut().spacing.interact_size.y" so change it to match the size of the TextEdit
             // TODO: Make this size dynamic so it doesn't break when the message has more than 2 rows
             ui.style_mut().spacing.interact_size.y = 50.;
-            ui.add_space(5.);
             ui.horizontal(|ui| {
                 ui.add(
                     egui::TextEdit::multiline(message)
@@ -152,17 +175,17 @@ pub fn chatroom(
                         .margin(Vec2 { x: 8., y: 4. }),
                 );
                 // Add space before the send button
-                ui.add_space(ui.available_width() * 0.1);
+                ui.add_space(ui.available_width() * 0.2);
                 // Change this back to a smaller size before creating the button
                 ui.style_mut().spacing.interact_size.y = 20.;
                 let button = ui.add_sized(
-                    [ui.available_width() * 0.2, ui.available_height() * 0.5],
+                    [ui.available_width() * 0.5, ui.available_height() * 0.75],
                     egui::Button::new("Send"),
                 );
                 if button.clicked() && !message.is_empty() {
                     send_message(
                         http_client,
-                        trigger_fetch,
+                        trigger_fetch_messages,
                         &user_info.user_id,
                         &mut selected_room.id,
                         message,
@@ -172,11 +195,16 @@ pub fn chatroom(
             });
             ui.add_space(5.);
             // Print chatroom
-
             ui.with_layout(Layout::top_down(Align::Center), |ui| {
-                ui.add_space(8.);
                 ui.heading(&selected_room.name);
-                ui.add_space(8.);
+                ui.style_mut().spacing.interact_size.y = 10.;
+                // Show delete room button if logged in user is the owner of the room
+                if user_info.user_id == selected_room.owner {
+                    if ui.add(egui::Button::new("Delete room")).clicked() {
+                        delete_room(http_client, trigger_fetch_rooms, selected_room);
+                    }
+                }
+
                 egui::ScrollArea::vertical()
                     .id_source("chatroom")
                     .max_width(ui.available_width())
@@ -187,7 +215,6 @@ pub fn chatroom(
                             let creation_time = &mut message.creation_time[0..10].to_owned();
                             creation_time.push_str("  ");
                             creation_time.push_str(&message.creation_time[11..19]);
-
                             egui::containers::Frame::none()
                                 .outer_margin(egui::style::Margin {
                                     left: 5.,
@@ -226,7 +253,7 @@ pub fn chatroom(
         ui.with_layout(
             Layout::centered_and_justified(Direction::LeftToRight),
             |ui| {
-                ui.heading("Open or create a new room to begin");
+                ui.heading("Open a room or create a new one to begin");
             },
         );
     }

@@ -2,27 +2,35 @@ use egui::{Align, Layout, Stroke, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
-use crate::{HttpClient, Room, Rooms};
+use crate::{HttpClient, Room, Rooms, User};
 
 // Tests for side_pane component
 #[cfg(test)]
 mod tests {
     use uuid::Uuid;
 
-    use crate::{side_pane, HttpClient, Room, Rooms};
+    use crate::{side_pane, HttpClient, Room, Rooms, User};
 
     #[test]
     fn some_test() {
         let ctx = egui::Context::default();
         let http_client = HttpClient::default();
+        let mut user = User {
+            user_id: Uuid::new_v4().to_string(),
+            username: "username".to_owned(),
+            email: "user@user.com".to_owned(),
+            password: "".to_owned(),
+            token: "".to_owned(),
+            global_access_level: 2,
+            is_logged_in: true,
+        };
         let room_id = Uuid::new_v4().to_string();
-        let user_id = Uuid::new_v4().to_string();
 
         let mut room = Room {
             id: room_id.clone(),
             name: "Chatroom 1".to_owned(),
             public: true,
-            owner: user_id.clone(),
+            owner: user.user_id.clone(),
         };
         let mut rooms = Rooms {
             rooms: vec![
@@ -30,7 +38,7 @@ mod tests {
                     id: room_id,
                     name: "Chatroom 1".to_owned(),
                     public: true,
-                    owner: user_id,
+                    owner: user.user_id.clone(),
                 },
                 Room {
                     id: Uuid::new_v4().to_string(),
@@ -48,9 +56,12 @@ mod tests {
                 &http_client,
                 &mut true,
                 &mut true,
+                &mut false,
+                &mut user,
                 &mut rooms,
                 &mut room,
                 &mut "chatroom".to_owned(),
+                &mut "".to_owned(),
             );
         });
     }
@@ -61,14 +72,14 @@ fn create_room(
     trigger_fetch: &mut bool,
     room_name: &str,
     room_public: bool,
+    user: &User,
 ) {
     let id = Uuid::new_v4().to_string();
-    let owner = Uuid::new_v4().to_string();
     let body = Room {
         id,
         name: room_name.to_owned(),
         public: room_public,
-        owner,
+        owner: (user.user_id).to_owned(),
     };
 
     match http_client
@@ -120,9 +131,12 @@ pub fn side_pane(
     http_client: &HttpClient,
     trigger_fetch_rooms: &mut bool,
     trigger_fetch_messages: &mut bool,
+    show_modal: &mut bool,
+    user_info: &mut User,
     rooms: &mut Rooms,
     selected_room: &mut Room,
     chatroom_search: &mut String,
+    new_chatroom: &mut String,
 ) {
     //! A component that takes up the left side of the screen.
     //! It shows user profile and all the available chatrooms with a search functionality.
@@ -142,14 +156,14 @@ pub fn side_pane(
         Layout::top_down(Align::Center),
         |ui| {
             ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 8. };
-            ui.add_space(10.);
+            // TODO: Implement user profile view
             ui.heading("User profile");
-            ui.add_space(10.);
-            // Add a line under "User Profile"
+            ui.add_space(7.);
+            // Add a line under user profile
             let rect = ui.max_rect();
             let painter = ui.painter();
             let text_color = ctx.style().visuals.text_color();
-            let height = 50.;
+            let height = 40.;
             painter.line_segment(
                 [
                     rect.left_top() + Vec2 { x: 0., y: height },
@@ -168,25 +182,70 @@ pub fn side_pane(
             // Use bottom_up layout to add create chatroom functionality to the bottom
             // and leave the remaining space for chatroom scroll area
             ui.with_layout(Layout::bottom_up(Align::Center), |ui| {
-                ui.add_space(28.);
+                ui.add_space(22.);
                 ui.horizontal(|ui| {
                     let button = ui.add_sized(
                         [ui.available_width(), 30.],
                         egui::Button::new("Create chatroom"),
                     );
                     if button.clicked() {
-                        let room_name = "New room";
-                        let room_public = true;
-                        create_room(http_client, trigger_fetch_rooms, room_name, room_public);
+                        *show_modal = true;
+                    }
+                    // Open this window modal if user clicks create chatroom button
+                    if *show_modal {
+                        egui::Window::new("New chatroom")
+                            .anchor(egui::Align2::CENTER_CENTER, egui::vec2(0.0, 0.0))
+                            .fixed_size(Vec2 { x: 400., y: 300. })
+                            .collapsible(false)
+                            .show(ctx, |ui| {
+                                ui.with_layout(Layout::top_down(Align::Center), |ui| {
+                                    ui.style_mut().spacing.item_spacing = Vec2 { x: 5., y: 5. };
+                                    ui.add(
+                                        egui::TextEdit::singleline(new_chatroom)
+                                            .id_source("new_chatroom")
+                                            .hint_text("Enter a name for your chatroom")
+                                            .desired_width(f32::INFINITY)
+                                            .margin(Vec2 { x: 8., y: 4. }),
+                                    );
+                                    ui.horizontal(|ui| {
+                                        ui.add_space(ui.available_width() * 0.25);
+                                        let new_chatroom_button = ui.add_sized(
+                                            [ui.available_width() * 0.33, 30.],
+                                            egui::Button::new("Create"),
+                                        );
+                                        if new_chatroom_button.clicked() && !new_chatroom.is_empty()
+                                        {
+                                            let room_public = true;
+                                            create_room(
+                                                http_client,
+                                                trigger_fetch_rooms,
+                                                new_chatroom,
+                                                room_public,
+                                                user_info,
+                                            );
+                                            *show_modal = false;
+                                            *new_chatroom = "".to_owned();
+                                        };
+                                        let close_modal_button = ui.add_sized(
+                                            [ui.available_width() * 0.5, 30.],
+                                            egui::Button::new("Cancel"),
+                                        );
+                                        if close_modal_button.clicked() {
+                                            *show_modal = false;
+                                            *new_chatroom = "".to_owned();
+                                        }
+                                    })
+                                })
+                            });
                     }
                 });
-                ui.add_space(12.);
+                ui.add_space(10.);
                 ui.with_layout(Layout::top_down(Align::Center), |ui| {
                     // ScrollArea to host all chatrooms as buttons
                     egui::ScrollArea::vertical()
                         .id_source("side_pane")
                         .max_width(ui.available_width())
-                        .show(ui,|ui| {
+                        .show(ui, |ui| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively
                             for i in rooms
                                 .rooms
