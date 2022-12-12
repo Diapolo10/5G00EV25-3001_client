@@ -124,8 +124,8 @@ pub fn side_pane(
     selected_room: &mut Room,
     chatroom_search: &mut String,
 ) {
-    //! A component that takes up the left side of the screen.
-    //! It shows user profile and all the available chatrooms with a search functionality.
+    //! A component that shows user profile and all the available chatrooms with a search functionality.
+    //! It takes up the left side of the screen.
 
     // Fetch rooms when opening app and when new room is created (TODO: fetch when deleted)
     if *trigger_fetch_rooms {
@@ -186,7 +186,7 @@ pub fn side_pane(
                     egui::ScrollArea::vertical()
                         .id_source("side_pane")
                         .max_width(ui.available_width())
-                        .show(ui,|ui| {
+                        .show(ui, |ui| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively
                             for i in rooms
                                 .rooms

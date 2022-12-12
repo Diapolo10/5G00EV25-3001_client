@@ -12,6 +12,7 @@ use super::message::Messages;
 // We derive Deserialize/Serialize so we can persist app state on shutdown.
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
+/// Main struct of which the app is built around. Saves all data used on the client.
 pub struct ChatApp {
     pub user_info: User,
     pub rooms: Rooms,
