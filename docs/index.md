@@ -46,6 +46,9 @@ Most of the issues in the project page are described well, have linked pull requ
 
 ## 3. Installation
 
+> **Note**
+> At the moment there is no up to date executable file, so you'll have to install from source
+
 To install the client application, it is recommended to download the latest
 packaged executable file from the project's
 [GitHub releases section](https://github.com/Diapolo10/5G00EV25-3001_client/releases) as that simplifies the installation
@@ -64,7 +67,7 @@ If one doesn't exist or it's outdated, you'll likely need to install from source
     curl -LO https://github.com/Diapolo10/5G00EV25-3001_client/archive/refs/heads/main.zip -o main.zip
 ```
 2. Unpack the downloaded ZIP-file to a convenient location
-3. For instructions on how to run the application go to section 5
+3. For instructions on how to run the application go to [section 5](#5-usage)
 
 ## 4. Development
 
