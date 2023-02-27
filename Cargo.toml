@@ -10,7 +10,7 @@ egui = "0.19.0"
 #winit = "0.27.4"
 reqwest = { version = "0.11.12", features = ["json", "blocking"] }
 tokio = { version = "1.21.2", features = ["full"] }
-eframe = { version = "0.19.0", features = ["persistence"] }
+eframe = { version = "0.21.3", features = ["persistence"] }
 serde = { version = "1", features = ["derive"] }
 chrono = "0.4.22"
 regex = "1.7.0"
