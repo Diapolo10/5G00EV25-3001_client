@@ -48,7 +48,7 @@ fn login(http_client: &HttpClient, user: UserLogin) -> User {
                 let user = res.json::<UserRes>().unwrap_or_default();
                 println!("{:#?}", user);
                 println!("Login successful");
-                return User {
+                User {
                     user_id: user.user_id,
                     username: user.username,
                     email: user.email,
@@ -56,7 +56,7 @@ fn login(http_client: &HttpClient, user: UserLogin) -> User {
                     token: user.token,
                     global_access_level: user.global_access_level,
                     is_logged_in: true,
-                };
+                }
             }
         }
         Err(err) => {
@@ -96,7 +96,7 @@ pub fn loginpage(
         )
         .unwrap();
 
-        if *signupmode == true {
+        if *signupmode {
             ui.heading("Signup");
             ui.add_space(10.);
             ui.label("Username");
@@ -116,7 +116,7 @@ pub fn loginpage(
                 .id_source("user_password"),
         );
 
-        if *signupmode == false {
+        if !*signupmode {
             // Show clickable login button if email field contains an email and password field isn't empty
             if email_regex.is_match(&user_info.email) && !user_info.password.is_empty() {
                 if ui.button("Log in").clicked() {
@@ -164,7 +164,7 @@ pub fn loginpage(
                         password: (*user_info.password.to_owned()).to_string(),
                     };
                     // If signup was successful
-                    if signup(http_client, user_signup) == true {
+                    if signup(http_client, user_signup) {
                         *user_info = User::default();
                         *signupmode = false;
                     }

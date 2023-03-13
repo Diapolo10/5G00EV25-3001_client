@@ -199,10 +199,8 @@ pub fn chatroom(
                 ui.heading(&selected_room.name);
                 ui.style_mut().spacing.interact_size.y = 10.;
                 // Show delete room button if logged in user is the owner of the room
-                if user_info.user_id == selected_room.owner {
-                    if ui.add(egui::Button::new("Delete room")).clicked() {
-                        delete_room(http_client, trigger_fetch_rooms, selected_room);
-                    }
+                if user_info.user_id == selected_room.owner && ui.add(egui::Button::new("Delete room")).clicked() {
+                    delete_room(http_client, trigger_fetch_rooms, selected_room);
                 }
 
                 egui::ScrollArea::vertical()
@@ -215,11 +213,7 @@ pub fn chatroom(
                             let creation_date = message.creation_time[0..10].to_owned();
                             let creation_time = message.creation_time[11..16].to_owned();
                             // Show date on first message and every time message creation date changes
-                            if row.0 == 0 {
-                                ui.label(creation_date);
-                            } else if !creation_date
-                                .eq(&messages.messages[row.0 - 1].creation_time[0..10].to_owned())
-                            {
+                            if row.0 == 0 || !creation_date.eq(&messages.messages[row.0 - 1].creation_time[0..10].to_owned()) {
                                 ui.label(creation_date);
                             }
                             egui::containers::Frame::none()

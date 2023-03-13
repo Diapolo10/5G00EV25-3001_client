@@ -18,9 +18,14 @@ fn main() {
         ..Default::default()
     };
 
-    eframe::run_native(
+    let result = eframe::run_native(
         "EguiValet",
         native_options,
         Box::new(|cc| Box::new(ChatApp::new(cc))),
     );
+    
+    match result {
+        Ok(_) => (),
+        Err(e) => println!("{:?}", e), 
+    };
 }
