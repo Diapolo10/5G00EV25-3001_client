@@ -26,7 +26,7 @@ jobs:
           target: ${{ matrix.target }}
           override: true
       - name: Install build dependencies
-        if: !contains(matrix.target, 'windows')
+        if: ${{ !contains(matrix.target, 'windows') }}
         run: sudo apt install libfontconfig libfontconfig1-dev
       - uses: actions-rs/cargo@v1
         with:
