@@ -30,7 +30,7 @@ jobs:
           targets: ${{ matrix.target }}
           toolchain: ${{ matrix.rust-toolchain }}
       - name: Install build dependencies
-        if: ${{ !contains(matrix.target, 'windows') }}
+        if: ${{ contains(matrix.target, 'linux') }}
         run: sudo apt-get install libfontconfig libfontconfig1-dev
       - name: Install cross
         run: cargo install cross --git https://github.com/cross-rs/cross
@@ -101,3 +101,4 @@ jobs:
           asset_name: ${{ env.PROGRAM_NAME }}-wasm32-unknown-emscripten-${{ steps.version.outputs.full }}.wasm
           asset_content_type: application/zip
           upload_url: ${{ steps.new_release.outputs.upload_url }}
+        continue-on-error: true
