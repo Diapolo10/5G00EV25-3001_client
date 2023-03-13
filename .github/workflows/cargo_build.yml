@@ -18,13 +18,16 @@ jobs:
         - x86_64-unknown-linux-gnu
         - x86_64-pc-windows-gnu
         - wasm32-unknown-emscripten
+        rust-toolchain:
+        - stable
+        - nightly
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          rustup default ${{ matrix.rust-toolchain }}
       - name: Install build dependencies
         if: ${{ !contains(matrix.target, 'windows') }}
         run: sudo apt install libfontconfig libfontconfig1-dev
