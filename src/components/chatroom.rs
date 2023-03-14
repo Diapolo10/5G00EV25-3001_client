@@ -4,8 +4,10 @@ use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
 use crate::{
-    structs::{Message, Messages, ResMessage},
-    HttpClient, Room, User,
+    structs::message,
+    structs::message::{Message, Messages},
+    structs::user::User,
+    HttpClient, Room,
 };
 
 // Tests for chatroom component
@@ -13,7 +15,9 @@ use crate::{
 mod tests {
     use uuid::Uuid;
 
-    use crate::{chatroom, structs::Messages, HttpClient, Room, User};
+    use crate::structs::message::Messages;
+    use crate::structs::user::User;
+    use crate::{chatroom, HttpClient, Room};
 
     #[test]
     fn some_test() {
@@ -48,9 +52,9 @@ mod tests {
 fn send_message(
     http_client: &HttpClient,
     trigger_fetch: &mut bool,
-    user_id: &String,
+    user_id: &str,
     room_id: &mut String,
-    message: &mut String,
+    message: &mut str,
 ) {
     let id = Uuid::new_v4().to_string();
     let mut current_time = Local::now().to_string();
@@ -59,9 +63,9 @@ fn send_message(
     let body = Message {
         id,
         user_id: user_id.to_owned(),
-        room_id: room_id.to_owned(),
+        room_id: room_id.clone(),
         message: message.to_owned(),
-        creation_time: current_time.to_owned(),
+        creation_time: current_time.clone(),
         last_edited: current_time,
     };
 
@@ -78,14 +82,14 @@ fn send_message(
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
-                println!("Post messages error: {}", res.status());
-            } else {
-                println!("Message sent: {:#?}", res.json::<ResMessage>());
+            if res.status().is_success() {
+                println!("Message sent: {:#?}", res.json::<message::Res>());
                 *trigger_fetch = true;
+            } else {
+                println!("Post messages error: {}", res.status());
             }
         }
-        Err(err) => println!("Post messages error: {}", err),
+        Err(err) => println!("Post messages error: {err}"),
     }
 }
 
@@ -99,17 +103,17 @@ fn fetch_messages(http_client: &HttpClient, room_id: &mut String) -> Messages {
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
+            if res.status().is_success() {
+                let messages = res.json::<Vec<message::Res>>().unwrap_or_default();
+                println!("{messages:#?}");
+                Messages { messages }
+            } else {
                 println!("Fetch messages error: {}", res.status());
                 Messages { messages: vec![] }
-            } else {
-                let messages = res.json::<Vec<ResMessage>>().unwrap_or_default();
-                println!("{:#?}", messages);
-                Messages { messages }
             }
         }
         Err(err) => {
-            println!("Fetch messages error: {}", err);
+            println!("Fetch messages error: {err}");
             Messages { messages: vec![] }
         }
     }
@@ -125,15 +129,15 @@ fn delete_room(http_client: &HttpClient, trigger_fetch: &mut bool, selected_room
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
-                println!("Delete room error: {}", res.status());
-            } else {
+            if res.status().is_success() {
                 println!("Room deleted");
                 *selected_room = Room::default();
                 *trigger_fetch = true;
+            } else {
+                println!("Delete room error: {}", res.status());
             }
         }
-        Err(err) => println!("Delete room error: {}", err),
+        Err(err) => println!("Delete room error: {err}"),
     }
 }
 
@@ -158,7 +162,15 @@ pub fn chatroom(
     }
 
     // If user has selected a room
-    if *selected_room != Room::default() {
+    if *selected_room == Room::default() {
+        // If no room is selected, request user to select or create one
+        ui.with_layout(
+            Layout::centered_and_justified(Direction::LeftToRight),
+            |ui| {
+                ui.heading("Open a room or create a new one to begin");
+            },
+        );
+    } else {
         let desired_height_rows = 2;
         // Use bottom_up layout to create user message field and button first and leave the remaining space for messages
         ui.with_layout(Layout::bottom_up(Align::Center), |ui| {
@@ -199,7 +211,9 @@ pub fn chatroom(
                 ui.heading(&selected_room.name);
                 ui.style_mut().spacing.interact_size.y = 10.;
                 // Show delete room button if logged in user is the owner of the room
-                if user_info.user_id == selected_room.owner && ui.add(egui::Button::new("Delete room")).clicked() {
+                if user_info.user_id == selected_room.owner
+                    && ui.add(egui::Button::new("Delete room")).clicked()
+                {
                     delete_room(http_client, trigger_fetch_rooms, selected_room);
                 }
 
@@ -208,12 +222,16 @@ pub fn chatroom(
                     .max_width(ui.available_width())
                     .show(ui, |ui| {
                         for row in messages.messages.iter().enumerate() {
-                            let message: &ResMessage = row.1;
+                            let message: &message::Res = row.1;
                             let text = &message.message;
                             let creation_date = message.creation_time[0..10].to_owned();
                             let creation_time = message.creation_time[11..16].to_owned();
                             // Show date on first message and every time message creation date changes
-                            if row.0 == 0 || !creation_date.eq(&messages.messages[row.0 - 1].creation_time[0..10].to_owned()) {
+                            if row.0 == 0
+                                || !creation_date
+                                    .eq(&messages.messages[row.0 - 1].creation_time[0..10]
+                                        .to_owned())
+                            {
                                 ui.label(creation_date);
                             }
                             egui::containers::Frame::none()
@@ -248,13 +266,5 @@ pub fn chatroom(
                     });
             })
         });
-        // If no room is selected, request user to select or create one
-    } else {
-        ui.with_layout(
-            Layout::centered_and_justified(Direction::LeftToRight),
-            |ui| {
-                ui.heading("Open a room or create a new one to begin");
-            },
-        );
     }
 }

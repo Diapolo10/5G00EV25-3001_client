@@ -15,7 +15,7 @@ pub struct User {
 
 /// Used for taking user info when signing up
 #[derive(Deserialize, Serialize, Debug)]
-pub struct UserSignup {
+pub struct Signup {
     pub id: String,
     pub username: String,
     pub email: String,
@@ -24,14 +24,14 @@ pub struct UserSignup {
 
 /// Used for taking user info when logging in
 #[derive(Deserialize, Serialize, Debug)]
-pub struct UserLogin {
+pub struct Login {
     pub email: String,
     pub password: String,
 }
 
 /// Used for receiving user info when logging in
 #[derive(Deserialize, Serialize, Debug, Default)]
-pub struct UserRes {
+pub struct Res {
     pub user_id: String,
     pub username: String,
     pub email: String,

@@ -2,14 +2,15 @@ use egui::{Align, Layout, Stroke, Ui, Vec2};
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
-use crate::{HttpClient, Room, Rooms, User};
+use crate::{structs::user::User, HttpClient, Room, Rooms};
 
 // Tests for side_pane component
 #[cfg(test)]
 mod tests {
     use uuid::Uuid;
 
-    use crate::{side_pane, HttpClient, Room, Rooms, User};
+    use crate::structs::user::User;
+    use crate::{side_pane, HttpClient, Room, Rooms};
 
     #[test]
     fn some_test() {
@@ -79,7 +80,7 @@ fn create_room(
         id,
         name: room_name.to_owned(),
         public: room_public,
-        owner: (user.user_id).to_owned(),
+        owner: (user.user_id).clone(),
     };
 
     match http_client
@@ -90,14 +91,14 @@ fn create_room(
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
-                println!("Post room error: {}", res.status());
-            } else {
+            if res.status().is_success() {
                 println!("Room created: {:#?}", res.json::<Room>());
                 *trigger_fetch = true;
+            } else {
+                println!("Post room error: {}", res.status());
             }
         }
-        Err(err) => println!("Post room error: {}", err),
+        Err(err) => println!("Post room error: {err}"),
     };
 }
 
@@ -108,17 +109,17 @@ fn fetch_rooms(http_client: &HttpClient) -> Rooms {
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
+            if res.status().is_success() {
+                let rooms = res.json::<Vec<Room>>().unwrap_or_default();
+                println!("{rooms:#?}");
+                Rooms { rooms }
+            } else {
                 println!("Fetch rooms error: {}", res.status());
                 Rooms { rooms: vec![] }
-            } else {
-                let rooms = res.json::<Vec<Room>>().unwrap_or_default();
-                println!("{:#?}", rooms);
-                Rooms { rooms }
             }
         }
         Err(err) => {
-            println!("Fetch rooms error: {}", err);
+            println!("Fetch rooms error: {err}");
             Rooms { rooms: vec![] }
         }
     }
@@ -224,7 +225,7 @@ pub fn side_pane(
                                                 user_info,
                                             );
                                             *show_modal = false;
-                                            *new_chatroom = "".to_owned();
+                                            *new_chatroom = String::new();
                                         };
                                         let close_modal_button = ui.add_sized(
                                             [ui.available_width() * 0.5, 30.],
@@ -232,7 +233,7 @@ pub fn side_pane(
                                         );
                                         if close_modal_button.clicked() {
                                             *show_modal = false;
-                                            *new_chatroom = "".to_owned();
+                                            *new_chatroom = String::new();
                                         }
                                     })
                                 })
@@ -265,7 +266,7 @@ pub fn side_pane(
                                 if button.clicked() {
                                     *selected_room = room.clone();
                                     *trigger_fetch_messages = true;
-                                    println!("{:#?}", room);
+                                    println!("{room:#?}");
                                 }
                             }
                         });

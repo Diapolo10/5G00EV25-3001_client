@@ -23,9 +23,9 @@ fn main() {
         native_options,
         Box::new(|cc| Box::new(ChatApp::new(cc))),
     );
-    
+
     match result {
         Ok(_) => (),
-        Err(e) => println!("{:?}", e), 
+        Err(e) => println!("{e:?}"),
     };
 }

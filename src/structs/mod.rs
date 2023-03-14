@@ -1,14 +1,12 @@
 mod app;
-pub use app::ChatApp;
+pub use app::ChatApplication as ChatApp;
 
 mod room;
 pub use room::{Room, Rooms};
 
-mod message;
-pub use message::{Message, Messages, ResMessage};
+pub mod message;
 
 mod http_client;
 pub use http_client::HttpClient;
 
-mod user;
-pub use user::{User, UserLogin, UserRes, UserSignup};
+pub mod user;

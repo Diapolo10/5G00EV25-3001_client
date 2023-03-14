@@ -14,7 +14,7 @@ pub struct Message {
 
 /// Used for checking response when sending a new message to server
 #[derive(Deserialize, Serialize, Debug)]
-pub struct ResMessage {
+pub struct Res {
     pub id: String,
     pub user_id: String,
     pub message: String,
@@ -24,5 +24,5 @@ pub struct ResMessage {
 /// For storing messages in a vector
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Messages {
-    pub messages: Vec<ResMessage>,
+    pub messages: Vec<Res>,
 }

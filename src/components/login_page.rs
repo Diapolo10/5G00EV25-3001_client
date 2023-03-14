@@ -1,13 +1,14 @@
 use crate::{
-    structs::{UserLogin, UserRes, UserSignup},
-    HttpClient, User,
+    structs::user as user_,
+    HttpClient,
+    User,
 };
 use egui::{Align, Button, Layout, Ui, Vec2};
 use regex::Regex;
 use reqwest::header::CONTENT_TYPE;
 use uuid::Uuid;
 
-fn signup(http_client: &HttpClient, user: UserSignup) -> bool {
+fn signup(http_client: &HttpClient, user: &user_::Signup) -> bool {
     match http_client
         .client
         .post(format!("{}{}", http_client.base_url, "api/v1/users/"))
@@ -16,23 +17,23 @@ fn signup(http_client: &HttpClient, user: UserSignup) -> bool {
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
-                println!("Sign up error: {}", res.status());
-                false
-            } else {
+            if res.status().is_success() {
                 println!("Sign up successful");
                 true
+            } else {
+                println!("Sign up error: {}", res.status());
+                false
             }
         }
         Err(err) => {
-            println!("Sign up error: {}", err);
+            println!("Sign up error: {err}");
             false
         }
     }
 }
 
 #[allow(dead_code)]
-fn login(http_client: &HttpClient, user: UserLogin) -> User {
+fn login(http_client: &HttpClient, user: &user_::Login) -> User {
     match http_client
         .client
         .post(format!("{}{}", http_client.base_url, "api/v1/users/login"))
@@ -41,26 +42,26 @@ fn login(http_client: &HttpClient, user: UserLogin) -> User {
         .send()
     {
         Ok(res) => {
-            if !res.status().is_success() {
-                println!("Login error: {}", res.status());
-                User::default()
-            } else {
-                let user = res.json::<UserRes>().unwrap_or_default();
-                println!("{:#?}", user);
+            if res.status().is_success() {
+                let user = res.json::<user_::Res>().unwrap_or_default();
+                println!("{user:#?}");
                 println!("Login successful");
                 User {
                     user_id: user.user_id,
                     username: user.username,
                     email: user.email,
-                    password: "".to_owned(),
+                    password: String::new(),
                     token: user.token,
                     global_access_level: user.global_access_level,
                     is_logged_in: true,
                 }
+            } else {
+                println!("Login error: {}", res.status());
+                User::default()
             }
         }
         Err(err) => {
-            println!("Login error: {}", err);
+            println!("Login error: {err}");
             User::default()
         }
     }
@@ -70,11 +71,15 @@ pub fn loginpage(
     _ctx: &egui::Context,
     ui: &mut Ui,
     http_client: &HttpClient,
-    user_info: &mut User,
+    user_info: &mut user_::User,
     signupmode: &mut bool,
 ) {
     //! A component shown to an unauthorized user. It takes the entire screen
     //! and will disappear once user is logged in.
+    //!
+    //! # Panics
+    //!
+    //! Panics if there's an error parsing the regular expression literal
 
     // ui.allocate_ui_with_layout(
     //     Vec2 {
@@ -94,7 +99,7 @@ pub fn loginpage(
         let email_regex = Regex::new(
             r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
         )
-        .unwrap();
+        .expect("The regex literal is invalid, fix it");
 
         if *signupmode {
             ui.heading("Signup");
@@ -116,7 +121,35 @@ pub fn loginpage(
                 .id_source("user_password"),
         );
 
-        if !*signupmode {
+        if *signupmode {
+            // Show clickable signup button if email field contains an email and password and username fields aren't empty
+            if !user_info.username.is_empty()
+                && !user_info.password.is_empty()
+                && email_regex.is_match(&user_info.email)
+            {
+                if ui.button("Sign up").clicked() {
+                    // Sign up user
+                    let user_signup = user_::Signup {
+                        id: Uuid::new_v4().to_string(),
+                        email: (*user_info.email.clone()).to_string(),
+                        username: (*user_info.username.clone()).to_string(),
+                        password: (*user_info.password.clone()).to_string(),
+                    };
+                    // If signup was successful
+                    if signup(http_client, &user_signup) {
+                        *user_info = User::default();
+                        *signupmode = false;
+                    }
+                    // TODO: Tell user if signup was not successful
+                }
+            } else {
+                // Show disabled signup button if input fields have invalid input
+                ui.add_enabled(false, Button::new("Sign up"));
+            }
+            if ui.button("Login instead").clicked() {
+                *signupmode = false;
+            }
+        } else {
             // Show clickable login button if email field contains an email and password field isn't empty
             if email_regex.is_match(&user_info.email) && !user_info.password.is_empty() {
                 if ui.button("Log in").clicked() {
@@ -134,8 +167,8 @@ pub fn loginpage(
                             user_id: Uuid::new_v4().to_string(),
                             username: "username".to_owned(),
                             email: "user@user.com".to_owned(),
-                            password: "".to_owned(),
-                            token: "".to_owned(),
+                            password: String::new(),
+                            token: String::new(),
                             global_access_level: 2,
                             is_logged_in: true,
                         }
@@ -148,34 +181,6 @@ pub fn loginpage(
             }
             if ui.button("Signup instead").clicked() {
                 *signupmode = true;
-            }
-        } else {
-            // Show clickable signup button if email field contains an email and password and username fields aren't empty
-            if !user_info.username.is_empty()
-                && !user_info.password.is_empty()
-                && email_regex.is_match(&user_info.email)
-            {
-                if ui.button("Sign up").clicked() {
-                    // Sign up user
-                    let user_signup = UserSignup {
-                        id: Uuid::new_v4().to_string(),
-                        email: (*user_info.email.to_owned()).to_string(),
-                        username: (*user_info.username.to_owned()).to_string(),
-                        password: (*user_info.password.to_owned()).to_string(),
-                    };
-                    // If signup was successful
-                    if signup(http_client, user_signup) {
-                        *user_info = User::default();
-                        *signupmode = false;
-                    }
-                    // TODO: Tell user if signup was not successful
-                }
-            } else {
-                // Show disabled signup button if input fields have invalid input
-                ui.add_enabled(false, Button::new("Sign up"));
-            }
-            if ui.button("Login instead").clicked() {
-                *signupmode = false;
             }
         }
     });

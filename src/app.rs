@@ -25,15 +25,7 @@ impl App for ChatApp {
             // Create layout and add the components
             ui.with_layout(Layout::left_to_right(Align::default()), |ui| {
                 // Show login page if no token is found / user isn't logged in
-                if !self.user_info.is_logged_in {
-                    loginpage(
-                        ctx,
-                        ui,
-                        &http_client,
-                        &mut self.user_info,
-                        &mut self.signupmode,
-                    );
-                } else {
+                if self.user_info.is_logged_in {
                     side_pane(
                         ctx,
                         ui,
@@ -57,6 +49,14 @@ impl App for ChatApp {
                         &mut self.messages,
                         &mut self.selected_room,
                         &mut self.message,
+                    );
+                } else {
+                    loginpage(
+                        ctx,
+                        ui,
+                        &http_client,
+                        &mut self.user_info,
+                        &mut self.signupmode,
                     );
                 }
             });

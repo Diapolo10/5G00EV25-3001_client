@@ -1,14 +1,18 @@
-on: push
+on: [push, pull_request]
 
-name: Clippy linter check
+name: Cargo format and lint
 
 jobs:
   clippy_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: rustup component add clippy
-      - uses: actions-rs/clippy-check@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run formatter
+        uses: mbrobbel/rustfmt-check@0.5.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+      - name: Run clippy
+        run: cargo clippy -- -D warnings

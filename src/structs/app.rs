@@ -5,7 +5,8 @@ use eframe::egui::{
     TextStyle::{Body, Button, Heading, Monospace, Small},
 };
 
-use crate::{Room, Rooms, User};
+use crate::structs::user::User;
+use crate::{Room, Rooms};
 
 use super::message::Messages;
 
@@ -13,7 +14,7 @@ use super::message::Messages;
 // #[derive(serde::Deserialize, serde::Serialize)]
 // #[serde(default)] // if we add new fields, give them default values when deserializing old state
 /// Main struct of which the app is built around. Saves all data used on the client.
-pub struct ChatApp {
+pub struct ChatApplication {
     pub user_info: User,
     pub rooms: Rooms,
     pub messages: Messages,
@@ -38,10 +39,11 @@ pub struct ChatApp {
 //     }
 // }
 
-impl ChatApp {
+impl ChatApplication {
     //! Implement some functionality for the app struct (e.g. configure custom fonts)
 
     /// Called once before the first frame.
+    #[must_use]
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
@@ -57,15 +59,14 @@ impl ChatApp {
             rooms: Rooms::default(),
             messages: Messages::default(),
             selected_room: Room::default(),
-            chatroom_search: "".to_owned(),
-            new_chatroom: "".to_owned(),
-            message: "".to_owned(),
+            chatroom_search: String::new(),
+            new_chatroom: String::new(),
+            message: String::new(),
             signupmode: false,
             show_modal: false,
             trigger_fetch_rooms: true,
             trigger_fetch_messages: false,
         }
-
     }
 }
 
