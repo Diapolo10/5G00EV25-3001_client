@@ -10,7 +10,7 @@ chrono = { version = "0.4.22", default-features = false, features = ["clock", "s
 eframe = { version = "0.22.0", features = ["persistence"] }
 egui = "0.22.0"
 reqwest = { version = "0.11.18", features = ["json", "blocking"] }
-regex = "1.8.2"
+regex = "1.8.3"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1.28.1", features = ["full"] }
 #winit = "0.27.4"
