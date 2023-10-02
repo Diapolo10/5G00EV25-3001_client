@@ -9,7 +9,7 @@ edition = "2021"
 chrono = { version = "0.4.31", default-features = false, features = ["clock", "std", "wasmbind"] }
 eframe = { version = "0.23.0", features = ["persistence"] }
 egui = "0.23.0"
-reqwest = { version = "0.11.20", features = ["json", "blocking"] }
+reqwest = { version = "0.11.21", features = ["json", "blocking"] }
 regex = "1.9.5"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1.32.0", features = ["full"] }
