@@ -53,7 +53,7 @@ jobs:
         name: Download artifacts
         with:
           name: built-binary
-      - uses: nowsprinting/check-version-format-action@v3
+      - uses: nowsprinting/check-version-format-action@v4
         id: version
         with:
           prefix: 'v'
