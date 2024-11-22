@@ -1,8 +1,4 @@
-use crate::{
-    structs::user as user_,
-    HttpClient,
-    User,
-};
+use crate::{structs::user as user_, HttpClient, User};
 use egui::{Align, Button, Layout, Ui, Vec2};
 use regex::Regex;
 use reqwest::header::CONTENT_TYPE;

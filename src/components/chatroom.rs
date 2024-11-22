@@ -218,7 +218,7 @@ pub fn chatroom(
                 }
 
                 egui::ScrollArea::vertical()
-                    .id_source("chatroom")
+                    .id_salt("chatroom")
                     .max_width(ui.available_width())
                     .show(ui, |ui| {
                         for row in messages.messages.iter().enumerate() {

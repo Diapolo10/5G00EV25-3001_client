@@ -244,7 +244,7 @@ pub fn side_pane(
                 ui.with_layout(Layout::top_down(Align::Center), |ui| {
                     // ScrollArea to host all chatrooms as buttons
                     egui::ScrollArea::vertical()
-                        .id_source("side_pane")
+                        .id_salt("side_pane")
                         .max_width(ui.available_width())
                         .show(ui, |ui| {
                             // Show all chatrooms and if chatroom search contains something filter case insensitively

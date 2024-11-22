@@ -1,8 +1,8 @@
-use egui::{Align2, Button, FontId, Id, Rect, RichText, Sense, Stroke, Vec2};
+use egui::{Align2, Button, FontId, Id, Rect, RichText, Sense, Stroke, UiBuilder, Vec2};
 
 pub fn window_frame(
     ctx: &egui::Context,
-    frame: &mut eframe::Frame,
+    _frame: &mut eframe::Frame,
     title: &str,
     add_contents: impl FnOnce(&mut egui::Ui),
 ) {
@@ -53,7 +53,7 @@ pub fn window_frame(
             Button::new(RichText::new("❌").size(height - 4.0)).frame(false),
         );
         if close_response.clicked() {
-            frame.close();
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         }
 
         // Interact with the title bar (drag to move window):
@@ -64,17 +64,16 @@ pub fn window_frame(
         };
         let title_bar_response = ui.interact(title_bar_rect, Id::new("title_bar"), Sense::click());
         if title_bar_response.is_pointer_button_down_on() {
-            frame.drag_window();
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::StartDrag);
         }
-
         // Add the contents:
-        let content_rect = {
-            let mut rect = rect;
-            rect.min.y = title_bar_rect.max.y;
-            rect
-        }
-        .shrink(8.);
-        let mut content_ui = ui.child_ui(content_rect, *ui.layout());
-        add_contents(&mut content_ui);
+        // let content_rect = {
+        //     let mut rect = rect;
+        //     rect.min.y = title_bar_rect.max.y;
+        //     rect
+        // }
+        // .shrink(8.);
+        // let mut content_ui = ui.child_ui(content_rect, *ui.layout(), None);
+        let _content_ui = ui.scope_builder(UiBuilder::new(), add_contents);
     });
 }
