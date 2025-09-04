@@ -661,7 +661,7 @@ version = "0.2.0"
 dependencies = [
  "chrono",
  "eframe",
- "egui 0.32.1",
+ "egui 0.32.2",
  "openssl",
  "regex",
  "reqwest",
@@ -868,11 +868,11 @@ dependencies = [
 
 [[package]]
 name = "ecolor"
-version = "0.32.1"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6a7fc3172c2ef56966b2ce4f84177e159804c40b9a84de8861558ce4a59f422"
+checksum = "ebb57dec02e4cca6d70d02e29865f7e52dbd471383f4c3444dda7ee78d467360"
 dependencies = [
- "emath 0.32.1",
+ "emath 0.32.2",
 ]
 
 [[package]]
@@ -934,14 +934,14 @@ dependencies = [
 
 [[package]]
 name = "egui"
-version = "0.32.1"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49e2be082f77715496b4a39fdc6f5dc7491fefe2833111781b8697ea6ee919a7"
+checksum = "40df1115b8b0f3d4f1f9134a26287fd3d0e067fc18f879b8c9641aedf3eecef7"
 dependencies = [
  "ahash",
  "bitflags 2.9.0",
- "emath 0.32.1",
- "epaint 0.32.1",
+ "emath 0.32.2",
+ "epaint 0.32.2",
  "nohash-hasher",
  "profiling",
  "smallvec",
@@ -1019,9 +1019,9 @@ dependencies = [
 
 [[package]]
 name = "emath"
-version = "0.32.1"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "935df67dc48fdeef132f2f7ada156ddc79e021344dd42c17f066b956bb88dde3"
+checksum = "b5c95b6d5571099bfa0ae9f4fdaef2c239bccb01d55339a082070259dc6f3b05"
 
 [[package]]
 name = "encoding_rs"
@@ -1091,15 +1091,15 @@ dependencies = [
 
 [[package]]
 name = "epaint"
-version = "0.32.1"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b66fc0a5a9d322917de9bd3ac7d426ca8aa3127fbf1e76fae5b6b25e051e06a3"
+checksum = "695fd7b458f31fe515d6a308f46b2936cae9316dc40c960a7ee31ce3a97866b9"
 dependencies = [
  "ab_glyph",
  "ahash",
- "ecolor 0.32.1",
- "emath 0.32.1",
- "epaint_default_fonts 0.32.1",
+ "ecolor 0.32.2",
+ "emath 0.32.2",
+ "epaint_default_fonts 0.32.2",
  "nohash-hasher",
  "parking_lot",
  "profiling",
@@ -1113,9 +1113,9 @@ checksum = "fc7e7a64c02cf7a5b51e745a9e45f60660a286f151c238b9d397b3e923f5082f"
 
 [[package]]
 name = "epaint_default_fonts"
-version = "0.32.1"
+version = "0.32.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f6cf8ce0fb817000aa24f5e630bda904a353536bd430b83ebc1dceee95b4a3a"
+checksum = "bbc9f86ce3eaf9b7fc7179a578af21a6a5cd2d4fd21965564e82a2d009a7dab0"
 
 [[package]]
 name = "equivalent"
