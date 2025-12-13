@@ -37,7 +37,7 @@ jobs:
       - name: Cross build
         run: cross build --target ${{ matrix.target }} --release
       - name: Upload built binary
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: built-binary
           path: |
