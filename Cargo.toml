@@ -12,7 +12,7 @@ chrono = { version = "^0.4.45", default-features = false, features = [
     "wasmbind",
 ] }
 eframe = { version = "^0.34.3", features = ["persistence"] }
-egui = "^0.34.3"
+egui = "^0.35.0"
 rand = "^0.10.1"
 reqwest = { version = "^0.13.4", features = ["json", "blocking"] }
 regex = "^1.12.4"
